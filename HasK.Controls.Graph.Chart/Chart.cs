@@ -21,6 +21,7 @@ namespace HasK.Controls.Graph
         private HashSet<MouseButtons> _pressed_mouse = new HashSet<MouseButtons>();
         private Point _pressed_move_point;
         private int _scr_cx, _scr_cy;
+        private double _minX, _maxX, _minY, _maxY;
 
         private IChartObject _selected;
         private DPoint _view_center_point;
@@ -49,10 +50,65 @@ namespace HasK.Controls.Graph
             }
         }
 
-        public double MinX { get; private set; }
-        public double MinY { get; private set; }
-        public double MaxX { get; private set; }
-        public double MaxY { get; private set; }
+        /// <summary>
+        /// Minumum grid value by X axis
+        /// </summary>
+        public double MinX
+        {
+            get { return _minX; }
+            set{
+                if (value != _minX)
+                {
+                    _minX = value;
+                    Redraw();
+                }
+            }
+        }
+        /// <summary>
+        /// Minumum grid value by Y axis
+        /// </summary>
+        public double MinY
+        {
+            get { return _minY; }
+            set
+            {
+                if (value != _minY)
+                {
+                    _minY = value;
+                    Redraw();
+                }
+            }
+        }
+        /// <summary>
+        /// Maximum grid value by X axis
+        /// </summary>
+        public double MaxX
+        {
+            get { return _maxX; }
+            set
+            {
+                if (value != _maxX)
+                {
+                    _maxX = value;
+                    Redraw();
+                }
+            }
+        }
+        /// <summary>
+        /// Maximum grid value by Y axis
+        /// </summary>
+        public double MaxY
+        {
+            get { return _maxY; }
+            set
+            {
+                if (value != _maxY)
+                {
+                    _maxY = value;
+                    Redraw();
+                }
+            }
+        }
 
         public Font GridTextFont { get; set; }
 
@@ -169,7 +225,7 @@ namespace HasK.Controls.Graph
         /// <summary>
         /// Get or set the background color
         /// </summary>
-        public Color BackgroundColor
+        public override Color BackColor
         {
             get
             {
@@ -190,6 +246,7 @@ namespace HasK.Controls.Graph
         public Chart()
         {
             InitializeComponent();
+            SetDefaults();
         }
 
         # region Methods to control the visible representation of chart
@@ -205,7 +262,7 @@ namespace HasK.Controls.Graph
             GridColor = Color.Gray;
             GridTextFont = new Font("Tahoma", 10);
             DisplayGrid = true;
-            BackgroundColor = Color.White;
+            BackColor = Color.White;
             SetGridMinMax(-10, 10, -10, 10);
             SetVisibleRect(-11, 11, 22, 22);
             Suspended = false;
@@ -280,7 +337,8 @@ namespace HasK.Controls.Graph
             if (!_suspended)
             {
                 g.FillRectangle(_background_brush, 0, 0, Width, Height);
-                DrawGrid(g);
+                if (_display_grid)
+                    DrawGrid(g);
                 foreach (var obj in _items)
                     obj.Draw(g);
                 if (_selected != null)
@@ -429,12 +487,6 @@ namespace HasK.Controls.Graph
         {
             Focus();
             base.OnEnter(e);
-        }
-
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            SetDefaults();
         }
         # endregion
 
