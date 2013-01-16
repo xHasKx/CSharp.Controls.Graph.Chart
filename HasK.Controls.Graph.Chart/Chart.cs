@@ -326,6 +326,13 @@ namespace HasK.Controls.Graph
             return res;
         }
         /// <summary>
+        /// Removing all objects from chart
+        /// </summary>
+        public void RemoveAllObjects()
+        {
+            _items.Clear();
+        }
+        /// <summary>
         /// All items on chart
         /// </summary>
         public IEnumerable<IChartObject> Items { get { return _items; } }
