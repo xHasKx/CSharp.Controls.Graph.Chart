@@ -31,7 +31,7 @@ namespace HasK.Controls.Graph
 
         # region Public fields
         /// <summary>
-        /// Указывает, отображать ли координатную сетку
+        /// Shows is coordinates grid should be displayed
         /// </summary>
         public bool DisplayGrid
         {
@@ -57,7 +57,7 @@ namespace HasK.Controls.Graph
         public Font GridTextFont { get; set; }
 
         /// <summary>
-        /// Возвращает или устанавливает выбранный объект
+        /// Get or set selected object
         /// </summary>
         public IChartObject Selected
         {
@@ -85,7 +85,7 @@ namespace HasK.Controls.Graph
         public event SelChanged SelectionChanged;
 
         /// <summary>
-        /// Возвращает или задаёт координаты центральной точки просмотра
+        /// Get or set the center point of view
         /// </summary>
         public DPoint ViewCenterPoint
         {
@@ -104,7 +104,7 @@ namespace HasK.Controls.Graph
         }
 
         /// <summary>
-        /// Возвращает или задаёт масштаб
+        /// Get or set view scale
         /// </summary>
         public double ViewScale
         {
@@ -123,7 +123,7 @@ namespace HasK.Controls.Graph
         }
 
         /// <summary>
-        /// Задаёт или возвращает состояние замороженности отображения графика
+        /// Get or set the frozen state of graph
         /// </summary>
         public bool Suspended
         {
@@ -144,7 +144,7 @@ namespace HasK.Controls.Graph
         private Pen _grid_pen;
         private Brush _grid_brush;
         /// <summary>
-        /// Возвращает или устанавливает цвет сетки
+        /// Get or set the color of coordinates grid
         /// </summary>
         public Color GridColor
         {
@@ -167,7 +167,7 @@ namespace HasK.Controls.Graph
         private Color _background_color;
         private Brush _background_brush;
         /// <summary>
-        /// Возвращает или устанавливает цвет фона
+        /// Get or set the background color
         /// </summary>
         public Color BackgroundColor
         {
