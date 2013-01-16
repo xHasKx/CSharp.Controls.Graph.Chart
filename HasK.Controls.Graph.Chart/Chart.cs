@@ -346,7 +346,11 @@ namespace HasK.Controls.Graph
         {
             var res = _items.Remove(obj);
             if (res)
+            {
+                if (obj == _selected)
+                    _selected = null;
                 Redraw();
+            }
             return res;
         }
         /// <summary>
@@ -354,7 +358,9 @@ namespace HasK.Controls.Graph
         /// </summary>
         public void RemoveAllObjects()
         {
+            _selected = null;
             _items.Clear();
+            Redraw();
         }
         /// <summary>
         /// All items on chart
