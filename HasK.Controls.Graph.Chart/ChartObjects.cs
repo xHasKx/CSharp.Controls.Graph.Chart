@@ -72,7 +72,7 @@ namespace HasK.Controls.Graph
         public ChartPoint(Chart chart)
             : base(chart)
         {
-            Color = Color.Red;
+            Color = Color.Black;
             Size = new Size(8, 8);
         }
 

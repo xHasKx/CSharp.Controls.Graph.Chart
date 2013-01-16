@@ -11,7 +11,7 @@ namespace HasK.Controls.Graph
 {
     public partial class Chart : UserControl
     {
-        # region Private fields
+        # region Common private fields
         private List<IChartObject> _items = new List<IChartObject>();
 
         private const MouseButtons MoveButton = MouseButtons.Right;
@@ -30,7 +30,7 @@ namespace HasK.Controls.Graph
 
         # endregion
 
-        # region Public fields
+        # region Common public fields
         /// <summary>
         /// Shows is coordinates grid should be displayed
         /// </summary>
@@ -241,12 +241,35 @@ namespace HasK.Controls.Graph
                 }
             }
         }
+
+        private Color _sel_color;
+        private Brush _sel_brush;
+        /// <summary>
+        /// Color of selection
+        /// </summary>
+        public Color SelectionColor
+        {
+            get
+            {
+                return _sel_color;
+            }
+            set
+            {
+                if (value != _sel_color)
+                {
+                    _sel_color = value;
+                    _sel_brush = new SolidBrush(_sel_color);
+                    Redraw();
+                }
+            }
+        }
+
         # endregion
 
         public Chart()
         {
-            InitializeComponent();
             SetDefaults();
+            InitializeComponent();
         }
 
         # region Methods to control the visible representation of chart
@@ -263,6 +286,7 @@ namespace HasK.Controls.Graph
             GridTextFont = new Font("Tahoma", 10);
             DisplayGrid = true;
             BackColor = Color.White;
+            SelectionColor = Color.Black;
             SetGridMinMax(-10, 10, -10, 10);
             SetVisibleRect(-11, 11, 22, 22);
             Suspended = false;
@@ -399,7 +423,6 @@ namespace HasK.Controls.Graph
         protected void DrawSelection(Graphics g, IChartObject obj)
         {
             var b = obj.GetBounds();
-            var rbr = Brushes.Black;
             var sel_size = new Size(4, 4);
 
             var p1 = ToScreenPoint(new DPoint(b.X, b.Y));
@@ -410,10 +433,10 @@ namespace HasK.Controls.Graph
             p1.Offset(-sel_size.Width, 0);
             p3.Offset(0, -sel_size.Height); p4.Offset(-sel_size.Width, -sel_size.Height);
 
-            g.FillRectangle(rbr, new Rectangle(p1, sel_size));
-            g.FillRectangle(rbr, new Rectangle(p2, sel_size));
-            g.FillRectangle(rbr, new Rectangle(p3, sel_size));
-            g.FillRectangle(rbr, new Rectangle(p4, sel_size));
+            g.FillRectangle(_sel_brush, new Rectangle(p1, sel_size));
+            g.FillRectangle(_sel_brush, new Rectangle(p2, sel_size));
+            g.FillRectangle(_sel_brush, new Rectangle(p3, sel_size));
+            g.FillRectangle(_sel_brush, new Rectangle(p4, sel_size));
         }
 
         protected override void OnPaint(PaintEventArgs e)
