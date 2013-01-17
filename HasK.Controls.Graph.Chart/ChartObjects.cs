@@ -35,7 +35,7 @@ namespace HasK.Controls.Graph
     /// <summary>
     /// Base implementation of any object on chart
     /// </summary>
-    public class BaseChartObject : IChartObject
+    public abstract class BaseChartObject : IChartObject
     {
         public DPoint Center { get; set; }
         public Chart Chart { get; private set; }
@@ -56,15 +56,9 @@ namespace HasK.Controls.Graph
             Chart = chart;
         }
 
-        public virtual void Draw(Graphics g)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Draw(Graphics g);
 
-        public virtual DRect GetBounds()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract DRect GetBounds();
     }
 
     public class ChartPoint : BaseChartObject
