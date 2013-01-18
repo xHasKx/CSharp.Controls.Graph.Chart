@@ -60,7 +60,6 @@
             this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.chart1.DisplayGrid = true;
             this.chart1.GridColor = System.Drawing.Color.Gray;
             this.chart1.GridTextFont = new System.Drawing.Font("Tahoma", 10F);
             this.chart1.Location = new System.Drawing.Point(12, 12);
@@ -69,8 +68,10 @@
             this.chart1.MinX = -10D;
             this.chart1.MinY = -10D;
             this.chart1.Name = "chart1";
+            this.chart1.Selectable = false;
             this.chart1.Selected = null;
             this.chart1.SelectionColor = System.Drawing.Color.Navy;
+            this.chart1.ShowGrid = true;
             this.chart1.Size = new System.Drawing.Size(572, 373);
             this.chart1.Suspended = false;
             this.chart1.TabIndex = 0;
