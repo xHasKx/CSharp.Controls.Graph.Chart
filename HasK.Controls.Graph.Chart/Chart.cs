@@ -18,6 +18,7 @@ namespace HasK.Controls.Graph
         private const MouseButtons SelectButton = MouseButtons.Left;
 
         private bool _show_grid;
+        private bool _show_grid_numbers;
         private HashSet<MouseButtons> _pressed_mouse = new HashSet<MouseButtons>();
         private Point _pressed_move_point;
         private int _scr_cx, _scr_cy;
@@ -45,6 +46,25 @@ namespace HasK.Controls.Graph
                 if (value != _show_grid)
                 {
                     _show_grid = value;
+                    Redraw();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Shows is coordinates grid numbers should be displayed
+        /// </summary>
+        public bool ShowGridNumbers
+        {
+            get
+            {
+                return _show_grid_numbers;
+            }
+            set
+            {
+                if (value != _show_grid_numbers)
+                {
+                    _show_grid_numbers = value;
                     Redraw();
                 }
             }
@@ -264,21 +284,21 @@ namespace HasK.Controls.Graph
             }
         }
 
-        private bool _selectable;
+        private bool _selectable_objects;
         /// <summary>
         /// Get or set ability of selecting objects
         /// </summary>
-        public bool Selectable
+        public bool SelectableObjects
         {
             get
             {
-                return _selectable;
+                return _selectable_objects;
             }
             set
             {
-                if (value != _selectable)
+                if (value != _selectable_objects)
                 {
-                    _selectable = value;
+                    _selectable_objects = value;
                     Redraw();
                 }
             }
@@ -305,10 +325,11 @@ namespace HasK.Controls.Graph
             GridColor = Color.Gray;
             GridTextFont = new Font("Tahoma", 10);
             ShowGrid = true;
+            ShowGridNumbers = true;
             BackColor = Color.White;
             SelectionColor = Color.Black;
             SetGridMinMax(-10, 10, -10, 10);
-            SetVisibleRect(-11, 11, 22, 22);
+            SetVisibleRect(-11, 11, 11, -11);
             Suspended = false;
         }
 
@@ -327,24 +348,22 @@ namespace HasK.Controls.Graph
         /// <summary>
         /// Set visible rectangle on chart in real coordinates
         /// </summary>
-        /// <param name="x">Left position</param>
-        /// <param name="y">Top position</param>
-        /// <param name="width">Width</param>
-        /// <param name="height">Height</param>
-        public void SetVisibleRect(double x, double y, double width, double height)
+        /// <param name="x_left">Left position</param>
+        /// <param name="y_top">Top position</param>
+        /// <param name="x_right">Right porition</param>
+        /// <param name="y_bottom">Bottom position</param>
+        public void SetVisibleRect(double x_left, double y_top, double x_right, double y_bottom)
         {
+            var width = x_right - x_left;
+            var height = y_top - y_bottom;
             var rw = Width / width;
             var rh = Height / height;
             Suspended = true;
-            ViewCenterPoint = new DPoint(x + width / 2, y - height / 2);
+            ViewCenterPoint = new DPoint(x_left + width / 2, y_top - height / 2);
             ViewScale = Math.Min(rw, rh);
             Suspended = false;
         }
 
-        public void SetVisibleRect(DRect rect)
-        {
-            SetVisibleRect(rect.X, rect.Y, rect.Width, rect.Height);
-        }
         # endregion
 
         # region Methods to control of assigned objects
@@ -398,7 +417,7 @@ namespace HasK.Controls.Graph
                     DrawGrid(g);
                 foreach (var obj in _items)
                     obj.Draw(g);
-                if (_selectable && _selected != null)
+                if (_selectable_objects && _selected != null)
                     DrawSelection(g, _selected);
             }
         }
@@ -431,24 +450,26 @@ namespace HasK.Controls.Graph
         {
             var scr_x0 = ToScreenPoint(new DPoint(MinX, 0));
             var scr_x1 = ToScreenPoint(new DPoint(MaxX, 0));
-            g.DrawLine(_grid_pen, scr_x0, scr_x1);
-            g.DrawLine(_grid_pen, scr_x1.X, scr_x1.Y, scr_x1.X - 4, scr_x1.Y - 4);
-            g.DrawLine(_grid_pen, scr_x1.X, scr_x1.Y, scr_x1.X - 4, scr_x1.Y + 4);
-            DrawGridNum(g, MinX, scr_x0, false);
-            DrawGridNum(g, MaxX, scr_x1, false);
-            
+            g.DrawLine(_grid_pen, scr_x0, scr_x1); // X axis
+            g.DrawLine(_grid_pen, scr_x1.X, scr_x1.Y, scr_x1.X - 4, scr_x1.Y - 4); // X arrow
+            g.DrawLine(_grid_pen, scr_x1.X, scr_x1.Y, scr_x1.X - 4, scr_x1.Y + 4); //
             var scr_y0 = ToScreenPoint(new DPoint(0, MinY));
             var scr_y1 = ToScreenPoint(new DPoint(0, MaxY));
-            g.DrawLine(_grid_pen, scr_y0, scr_y1);
-            g.DrawLine(_grid_pen, scr_y1.X, scr_y1.Y, scr_y1.X - 4, scr_y1.Y + 4);
-            g.DrawLine(_grid_pen, scr_y1.X, scr_y1.Y, scr_y1.X + 4, scr_y1.Y + 4);
-            DrawGridNum(g, MinY, scr_y0, true);
-            DrawGridNum(g, MaxY, scr_y1, true);
+            g.DrawLine(_grid_pen, scr_y0, scr_y1); // Y axis
+            g.DrawLine(_grid_pen, scr_y1.X, scr_y1.Y, scr_y1.X - 4, scr_y1.Y + 4); // Y arrow
+            g.DrawLine(_grid_pen, scr_y1.X, scr_y1.Y, scr_y1.X + 4, scr_y1.Y + 4); //
+            if (_show_grid_numbers)
+            {
+                DrawGridNum(g, MinX, scr_x0, false);
+                DrawGridNum(g, MaxX, scr_x1, false);
+                DrawGridNum(g, MinY, scr_y0, true);
+                DrawGridNum(g, MaxY, scr_y1, true);
+            }
         }
 
         protected void DrawSelection(Graphics g, IChartObject obj)
         {
-            var b = obj.GetBounds();
+            var b = obj.GetBounds(g, _view_scale);
             var sel_size = new Size(4, 4);
 
             var p1 = ToScreenPoint(new DPoint(b.X, b.Y));
@@ -485,7 +506,7 @@ namespace HasK.Controls.Graph
             _pressed_mouse.Add(e.Button);
             if (e.Button == MoveButton)
                 _pressed_move_point = e.Location;
-            if (_selectable && e.Button == SelectButton)
+            if (_selectable_objects && e.Button == SelectButton)
                 TrySelectObject(e.Location);
             base.OnMouseDown(e);
         }
@@ -494,7 +515,7 @@ namespace HasK.Controls.Graph
         {
             var dp = ToRealPoint(point);
             foreach (var obj in _items)
-                if (dp.InRect(obj.GetBounds()))
+                if (obj.Selectable && dp.InRect(obj.GetBounds(CreateGraphics(), _view_scale)))
                 {
                     Selected = obj;
                     break;
@@ -524,7 +545,10 @@ namespace HasK.Controls.Graph
 
         protected override void OnMouseWheel(MouseEventArgs e)
         {
-            var dd = 1.0; // TODO: rework this scaling
+            var dd = 2.0;
+            if (_view_scale > 50)
+                dd = _view_scale / 10;
+
             if (e.Delta < 0)
                 dd = -dd;
             if (_view_scale + dd > 2.5)

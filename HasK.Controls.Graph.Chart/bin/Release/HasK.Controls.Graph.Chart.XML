@@ -1,0 +1,232 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HasK.Controls.Graph.Chart</name>
+    </assembly>
+    <members>
+        <member name="M:HasK.Controls.Graph.Chart.SetGridMinMax(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Set grid bounds
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.SetVisibleRect(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Set visible rectangle on chart in real coordinates
+            </summary>
+            <param name="x_left">Left position</param>
+            <param name="y_top">Top position</param>
+            <param name="x_right">Right porition</param>
+            <param name="y_bottom">Bottom position</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.AddObject(HasK.Controls.Graph.IChartObject)">
+            <summary>
+            Add object to chart
+            </summary>
+            <param name="obj">Object which should be added</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.RemoveObject(HasK.Controls.Graph.IChartObject)">
+            <summary>
+            Remove object from chart
+            </summary>
+            <param name="obj">Object which should be removed</param>
+            <returns>Returns true if object was removed, otherwise false</returns>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.RemoveAllObjects">
+            <summary>
+            Removing all objects from chart
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.DrawGridNum(System.Drawing.Graphics,System.Double,System.Drawing.Point,System.Boolean)">
+            <summary>
+            Draw double value near grid line
+            </summary>
+            <param name="g">Graphics</param>
+            <param name="value">Double value</param>
+            <param name="where">Point in screen coordinates where value should be</param>
+            <param name="on_the_right">If true - draw value on the right, otherwise - from the bottom</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.ToScreenPoint(HasK.Controls.Graph.DPoint)">
+            <summary>
+            Converting real coordinates to screen
+            </summary>
+            <param name="real"></param>
+            <returns></returns>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.ToRealPoint(System.Drawing.Point)">
+            <summary>
+            Converting screen coordinates to real
+            </summary>
+            <param name="scr"></param>
+            <returns></returns>
+        </member>
+        <member name="F:HasK.Controls.Graph.Chart.components">
+            <summary> 
+            Требуется переменная конструктора.
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.Dispose(System.Boolean)">
+            <summary> 
+            Освободить все используемые ресурсы.
+            </summary>
+            <param name="disposing">истинно, если управляемый ресурс должен быть удален; иначе ложно.</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.InitializeComponent">
+            <summary> 
+            Обязательный метод для поддержки конструктора - не изменяйте 
+            содержимое данного метода при помощи редактора кода.
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ShowGrid">
+            <summary>
+            Shows is coordinates grid should be displayed
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ShowGridNumbers">
+            <summary>
+            Shows is coordinates grid numbers should be displayed
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MinX">
+            <summary>
+            Minumum grid value by X axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MinY">
+            <summary>
+            Minumum grid value by Y axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MaxX">
+            <summary>
+            Maximum grid value by X axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MaxY">
+            <summary>
+            Maximum grid value by Y axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.Selected">
+            <summary>
+            Get or set selected object
+            </summary>
+        </member>
+        <member name="E:HasK.Controls.Graph.Chart.SelectionChanged">
+            <summary>
+            Occurs when selection is changed
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ViewCenterPoint">
+            <summary>
+            Get or set the center point of view
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ViewScale">
+            <summary>
+            Get or set view scale
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.Suspended">
+            <summary>
+            Get or set the frozen state of graph
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.GridColor">
+            <summary>
+            Get or set the color of coordinates grid
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.BackColor">
+            <summary>
+            Get or set the background color
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.SelectionColor">
+            <summary>
+            Color of selection
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.SelectableObjects">
+            <summary>
+            Get or set ability of selecting objects
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.Items">
+            <summary>
+            All items on chart
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.IChartObject">
+            <summary>
+            Interface which should be implemented by any object on chart
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.IChartObject.Draw(System.Drawing.Graphics)">
+            <summary>
+            This function calls to draw object on chart
+            </summary>
+            <param name="g"></param>
+        </member>
+        <member name="M:HasK.Controls.Graph.IChartObject.GetBounds(System.Drawing.Graphics,System.Double)">
+            <summary>
+            This proc should return the bound of object in real coordinates
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:HasK.Controls.Graph.IChartObject.Center">
+            <summary>
+            Represent the center point of object
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.IChartObject.Chart">
+            <summary>
+            Represent the chart which contains this object
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.IChartObject.Selectable">
+            <summary>
+            Shows if object can be selected
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.IChartObject.IsSelected">
+            <summary>
+            Shows if object is selected
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.BaseChartObject">
+            <summary>
+            Base implementation of any object on chart
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.ChartPoint">
+            <summary>
+            Simple square point on chart with specified color and size
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.ChartLine">
+            <summary>
+            One-pixel line on chart with specified points of begin, end, and specified color
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.ChartTextPoint">
+            <summary>
+            Point with specified color and text near it
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.DPoint">
+            <summary>
+            Graphical 2D point with double coordinates
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.DSize">
+            <summary>
+            Graphical 2D size with double width and height
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.DRect">
+            <summary>
+            Graphical 2D rectangle with double coordinates
+            </summary>
+        </member>
+    </members>
+</doc>

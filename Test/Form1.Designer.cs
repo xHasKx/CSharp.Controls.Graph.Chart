@@ -68,14 +68,16 @@
             this.chart1.MinX = -10D;
             this.chart1.MinY = -10D;
             this.chart1.Name = "chart1";
-            this.chart1.Selectable = false;
+            this.chart1.SelectableObjects = true;
             this.chart1.Selected = null;
             this.chart1.SelectionColor = System.Drawing.Color.Navy;
             this.chart1.ShowGrid = true;
+            this.chart1.ShowGridNumbers = false;
             this.chart1.Size = new System.Drawing.Size(572, 373);
             this.chart1.Suspended = false;
             this.chart1.TabIndex = 0;
             this.chart1.ViewScale = 16.681818181818183D;
+            this.chart1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
             // 
             // Form1
             // 

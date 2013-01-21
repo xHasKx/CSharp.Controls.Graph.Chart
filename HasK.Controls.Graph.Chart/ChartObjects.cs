@@ -17,6 +17,10 @@ namespace HasK.Controls.Graph
         /// </summary>
         Chart Chart { get; }
         /// <summary>
+        /// Shows if object can be selected
+        /// </summary>
+        bool Selectable { get; }
+        /// <summary>
         /// Shows if object is selected
         /// </summary>
         bool IsSelected { get; set; }
@@ -29,7 +33,7 @@ namespace HasK.Controls.Graph
         /// This proc should return the bound of object in real coordinates
         /// </summary>
         /// <returns></returns>
-        DRect GetBounds();
+        DRect GetBounds(Graphics g, double view_scale);
     }
 
     /// <summary>
@@ -37,6 +41,8 @@ namespace HasK.Controls.Graph
     /// </summary>
     public abstract class BaseChartObject : IChartObject
     {
+        public abstract bool Selectable { get; }
+
         public DPoint Center { get; set; }
         public Chart Chart { get; private set; }
         public bool IsSelected
@@ -58,11 +64,17 @@ namespace HasK.Controls.Graph
 
         public abstract void Draw(Graphics g);
 
-        public abstract DRect GetBounds();
+        public abstract DRect GetBounds(Graphics g, double view_scale);
     }
 
+    /// <summary>
+    /// Simple square point on chart with specified color and size
+    /// </summary>
     public class ChartPoint : BaseChartObject
     {
+
+        public override bool Selectable { get { return true; } }
+
         public ChartPoint(Chart chart)
             : base(chart)
         {
@@ -95,11 +107,136 @@ namespace HasK.Controls.Graph
             g.FillRectangle(_brush, rp.X - Size.Width / 2, rp.Y - Size.Height / 2, Size.Width, Size.Height);
         }
 
-        public override DRect GetBounds()
+        public override DRect GetBounds(Graphics g, double view_scale)
         {
-            var sc = Chart.ViewScale;
-            var psz = new DSize(Size.Width / sc, Size.Height / sc);
+            var psz = new DSize(Size.Width / view_scale, Size.Height / view_scale);
             return new DRect(Center.X - psz.Width / 2, Center.Y - psz.Height / 2, psz.Width, psz.Height);
         }
     }
+
+    /// <summary>
+    /// One-pixel line on chart with specified points of begin, end, and specified color
+    /// </summary>
+    public class ChartLine : BaseChartObject
+    {
+        private new DPoint Center; // hide Center property
+
+        public override bool Selectable { get { return false; } }
+
+        public DPoint Begin { get; set; }
+        public DPoint End { get; set; }
+
+        private Color _color;
+        private Pen _pen;
+        public Color Color
+        {
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                if (value != _color)
+                {
+                    _color = value;
+                    _pen = new Pen(_color);
+                }
+            }
+        }
+
+
+        public ChartLine(Chart chart) : this(chart, new DPoint(), new DPoint()) { }
+
+        public ChartLine(Chart chart, DPoint begin, DPoint end)
+            : base(chart)
+        {
+            Begin = begin;
+            End = end;
+            Color = Color.Black;
+        }
+
+        public override void Draw(Graphics g)
+        {
+            var begin = Chart.ToScreenPoint(Begin);
+            var end = Chart.ToScreenPoint(End);
+            g.DrawLine(_pen, begin, end);
+        }
+
+        public override DRect GetBounds(Graphics g, double view_scale)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// Point with specified color and text near it
+    /// </summary>
+    public class ChartTextPoint : BaseChartObject
+    {
+        public enum TextPlaceType { Bottom, Left, Top, Right };
+
+        public override bool Selectable { get { return false; } }
+
+        public string Text { get; set; }
+
+        private Color _color;
+        private Pen _pen;
+        private Brush _brush;
+        public Color Color
+        {
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                if (value != _color)
+                {
+                    _color = value;
+                    _pen = new Pen(_color);
+                    _brush = new SolidBrush(_color);
+                }
+            }
+        }
+
+        public TextPlaceType TextPlace { get; set; }
+
+        public Font Font { get; set; }
+
+        public ChartTextPoint(Chart chart, string text, DPoint position, TextPlaceType place_type)
+            : base(chart)
+        {
+            Center = position;
+            Text = text;
+            Font = new Font("Tahoma", 10);
+            Color = Color.Black;
+            TextPlace = place_type;
+        }
+
+        public override void Draw(Graphics g)
+        {
+            var pos = Chart.ToScreenPoint(Center);
+            PointF text_pos;
+            var text_size = g.MeasureString(Text, Font);
+
+            if (TextPlace == TextPlaceType.Bottom)
+                text_pos = new PointF(pos.X - text_size.Width / 2, pos.Y + 5);
+            else if (TextPlace == TextPlaceType.Left)
+                text_pos = new PointF(pos.X - 5 - text_size.Width, pos.Y - text_size.Height / 2);
+            else if (TextPlace == TextPlaceType.Top)
+                text_pos = new PointF(pos.X - text_size.Width / 2, pos.Y - 5 - text_size.Height);
+            else if (TextPlace == TextPlaceType.Right)
+                text_pos = new PointF(pos.X + 5, pos.Y - text_size.Height / 2);
+            else
+                return;
+            g.FillEllipse(_brush, pos.X - 3, pos.Y - 3, 6, 6);
+            g.DrawString(Text, Font, _brush, text_pos);
+        }
+
+        public override DRect GetBounds(Graphics g, double view_scale)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }
