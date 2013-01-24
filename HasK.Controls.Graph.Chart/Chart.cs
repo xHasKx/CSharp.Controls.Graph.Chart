@@ -9,13 +9,13 @@ using System.Windows.Forms;
 
 namespace HasK.Controls.Graph
 {
+    /// <summary>
+    /// Chart component
+    /// </summary>
     public partial class Chart : UserControl
     {
         # region Common private fields
-        private List<IChartObject> _items = new List<IChartObject>();
-
-        private const MouseButtons MoveButton = MouseButtons.Right;
-        private const MouseButtons SelectButton = MouseButtons.Left;
+        private List<ChartObject> _items = new List<ChartObject>();
 
         private bool _show_grid;
         private bool _show_grid_numbers;
@@ -24,13 +24,11 @@ namespace HasK.Controls.Graph
         private int _scr_cx, _scr_cy;
         private double _minX, _maxX, _minY, _maxY;
 
-        private IChartObject _selected;
+        private ChartObject _selected;
         private DPoint _view_center_point;
         private double _view_scale;
         private bool _suspended;
-
         # endregion
-
         # region Common public fields/properties
         /// <summary>
         /// Shows is coordinates grid should be displayed
@@ -50,9 +48,20 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
         /// <summary>
-        /// Shows is coordinates grid numbers should be displayed
+        /// Gets or sets mouse button for moving chart coordinates system
+        /// </summary>
+        public MouseButtons MoveButton { get; set; }
+        /// <summary>
+        /// Gets or sets mouse button for centering view in specified point
+        /// </summary>
+        public MouseButtons SetViewCenterButton { get; set; }
+        /// <summary>
+        /// Gets or sets mouse button for selecting objects
+        /// </summary>
+        public MouseButtons SelectButton { get; set; }
+        /// <summary>
+        /// Get or set option for display numbers on coordinates grid
         /// </summary>
         public bool ShowGridNumbers
         {
@@ -69,7 +78,6 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
         /// <summary>
         /// Minumum grid value by X axis
         /// </summary>
@@ -129,13 +137,14 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
-        public Font GridTextFont { get; set; }
-
         /// <summary>
-        /// Get or set selected object
+        /// Gets or sets the font of text on grid
         /// </summary>
-        public IChartObject Selected
+        public Font GridTextFont { get; set; }
+        /// <summary>
+        /// Gets or sets selected object
+        /// </summary>
+        public ChartObject Selected
         {
             get
             {
@@ -153,15 +162,19 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
-        public delegate void SelChanged(Chart chart, IChartObject old_selected, IChartObject now_selected);
+        /// <summary>
+        /// Delegate for SelectionChanged event
+        /// </summary>
+        /// <param name="chart">Chart with selected object</param>
+        /// <param name="old_selected">The object which was previously selected</param>
+        /// <param name="now_selected">The object which is current selected</param>
+        public delegate void SelChanged(Chart chart, ChartObject old_selected, ChartObject now_selected);
         /// <summary>
         /// Occurs when selection is changed
         /// </summary>
         public event SelChanged SelectionChanged;
-
         /// <summary>
-        /// Get or set the center point of view
+        /// Gets or sets the center point of view
         /// </summary>
         public DPoint ViewCenterPoint
         {
@@ -178,9 +191,8 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
         /// <summary>
-        /// Get or set view scale
+        /// Gets or sets view scale
         /// </summary>
         public double ViewScale
         {
@@ -197,9 +209,8 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
         /// <summary>
-        /// Get or set the frozen state of graph
+        /// Gets or sets the frozen state of graph
         /// </summary>
         public bool Suspended
         {
@@ -214,13 +225,12 @@ namespace HasK.Controls.Graph
             }
         }
         # endregion
-
         # region Visible properties of chart
         private Color _grid_color;
         private Pen _grid_pen;
         private Brush _grid_brush;
         /// <summary>
-        /// Get or set the color of coordinates grid
+        /// Gets or sets the color of coordinates grid
         /// </summary>
         public Color GridColor
         {
@@ -243,7 +253,7 @@ namespace HasK.Controls.Graph
         private Color _background_color;
         private Brush _background_brush;
         /// <summary>
-        /// Get or set the background color
+        /// Gets or sets the background color
         /// </summary>
         public override Color BackColor
         {
@@ -283,10 +293,9 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
         private bool _selectable_objects;
         /// <summary>
-        /// Get or set ability of selecting objects
+        /// Gets or sets ability of selecting objects
         /// </summary>
         public bool SelectableObjects
         {
@@ -303,25 +312,34 @@ namespace HasK.Controls.Graph
                 }
             }
         }
-
         # endregion
-
+        /// <summary>
+        /// Create chart control
+        /// </summary>
         public Chart()
         {
             SetDefaults();
             InitializeComponent();
+            MouseWheelHandler.Add(this, MyOnMouseWheel);
         }
-
         # region Methods to control the visible representation of chart
+        /// <summary>
+        /// Redraw chart and all objects
+        /// </summary>
         public void Redraw()
         {
             if (!_suspended)
                 Invalidate();
         }
-
+        /// <summary>
+        /// Set default values for main chart properties
+        /// </summary>
         public void SetDefaults()
         {
             Suspended = true;
+            MoveButton = MouseButtons.Right;
+            SelectButton = MouseButtons.Left;
+            SetViewCenterButton = MouseButtons.Left;
             GridColor = Color.Gray;
             GridTextFont = new Font("Tahoma", 10);
             ShowGrid = true;
@@ -332,7 +350,6 @@ namespace HasK.Controls.Graph
             SetVisibleRect(-11, 11, 11, -11);
             Suspended = false;
         }
-
         /// <summary>
         /// Set grid bounds
         /// </summary>
@@ -344,7 +361,6 @@ namespace HasK.Controls.Graph
             MaxY = maxY;
             Redraw();
         }
-
         /// <summary>
         /// Set visible rectangle on chart in real coordinates
         /// </summary>
@@ -363,15 +379,13 @@ namespace HasK.Controls.Graph
             ViewScale = Math.Min(rw, rh);
             Suspended = false;
         }
-
         # endregion
-
         # region Methods to control of assigned objects
         /// <summary>
         /// Add object to chart
         /// </summary>
         /// <param name="obj">Object which should be added</param>
-        public void AddObject(IChartObject obj)
+        public void AddObject(ChartObject obj)
         {
             _items.Add(obj);
             Redraw();
@@ -381,7 +395,7 @@ namespace HasK.Controls.Graph
         /// </summary>
         /// <param name="obj">Object which should be removed</param>
         /// <returns>Returns true if object was removed, otherwise false</returns>
-        public bool RemoveObject(IChartObject obj)
+        public bool RemoveObject(ChartObject obj)
         {
             var res = _items.Remove(obj);
             if (res)
@@ -404,9 +418,8 @@ namespace HasK.Controls.Graph
         /// <summary>
         /// All items on chart
         /// </summary>
-        public IEnumerable<IChartObject> Items { get { return _items; } }
+        public IList<ChartObject> Items { get { return _items; } }
         # endregion
-
         # region Methods for drawing and processing events
         private void Draw(Graphics g)
         {
@@ -421,7 +434,6 @@ namespace HasK.Controls.Graph
                     DrawSelection(g, _selected);
             }
         }
-
         /// <summary>
         /// Draw double value near grid line
         /// </summary>
@@ -429,7 +441,7 @@ namespace HasK.Controls.Graph
         /// <param name="value">Double value</param>
         /// <param name="where">Point in screen coordinates where value should be</param>
         /// <param name="on_the_right">If true - draw value on the right, otherwise - from the bottom</param>
-        protected void DrawGridNum(Graphics g, double value, Point where, bool on_the_right)
+        protected void DrawGridNum(Graphics g, double value, PointF where, bool on_the_right)
         {
             var sval = value.ToString();
             var ssize = g.MeasureString(sval, GridTextFont);
@@ -445,7 +457,10 @@ namespace HasK.Controls.Graph
             }
             g.DrawString(sval, GridTextFont, _grid_brush, where);
         }
-
+        /// <summary>
+        /// Draw simple grid on chart
+        /// </summary>
+        /// <param name="g">Graphics which should be used for drawing</param>
         protected void DrawGrid(Graphics g)
         {
             var scr_x0 = ToScreenPoint(new DPoint(MinX, 0));
@@ -466,33 +481,46 @@ namespace HasK.Controls.Graph
                 DrawGridNum(g, MaxY, scr_y1, true);
             }
         }
-
-        protected void DrawSelection(Graphics g, IChartObject obj)
+        /// <summary>
+        /// Draw simple selection around selected object
+        /// </summary>
+        /// <param name="g">Graphics which should be used for drawing</param>
+        /// <param name="obj">Selected object</param>
+        protected void DrawSelection(Graphics g, ChartObject obj)
         {
-            var b = obj.GetBounds(g, _view_scale);
-            var sel_size = new Size(4, 4);
+            if ((obj.Flags & ChartObject.Selectable) > 0)
+            {
+                var sobj = obj as IChartSelectableObject;
+                var b = sobj.GetBounds(g, _view_scale);
+                var sel_size = new Size(4, 4);
 
-            var p1 = ToScreenPoint(new DPoint(b.X, b.Y));
-            var p2 = ToScreenPoint(new DPoint(b.X + b.Width, b.Y));
-            var p3 = ToScreenPoint(new DPoint(b.X + b.Width, b.Y + b.Height));
-            var p4 = ToScreenPoint(new DPoint(b.X, b.Y + b.Height));
+                var p1 = ToScreenPoint(new DPoint(b.X, b.Y));
+                var p2 = ToScreenPoint(new DPoint(b.X + b.Width, b.Y));
+                var p3 = ToScreenPoint(new DPoint(b.X + b.Width, b.Y + b.Height));
+                var p4 = ToScreenPoint(new DPoint(b.X, b.Y + b.Height));
 
-            p1.Offset(-sel_size.Width, 0);
-            p3.Offset(0, -sel_size.Height); p4.Offset(-sel_size.Width, -sel_size.Height);
+                p1.X -= sel_size.Width;
+                p3.Y -= sel_size.Height;
+                p4.X -= sel_size.Width;
+                p4.Y -= sel_size.Height;
 
-            g.FillRectangle(_sel_brush, new Rectangle(p1, sel_size));
-            g.FillRectangle(_sel_brush, new Rectangle(p2, sel_size));
-            g.FillRectangle(_sel_brush, new Rectangle(p3, sel_size));
-            g.FillRectangle(_sel_brush, new Rectangle(p4, sel_size));
+                g.FillRectangle(_sel_brush, new RectangleF(p1, sel_size));
+                g.FillRectangle(_sel_brush, new RectangleF(p2, sel_size));
+                g.FillRectangle(_sel_brush, new RectangleF(p3, sel_size));
+                g.FillRectangle(_sel_brush, new RectangleF(p4, sel_size));
+            }
         }
-
+        /// <summary>
+        /// OnPaint event handler
+        /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            var gr = e.Graphics;
-            Draw(gr);
+            Draw(e.Graphics);
         }
-
+        /// <summary>
+        /// OnResize event handler
+        /// </summary>
         protected override void OnResize(EventArgs eventargs)
         {
             _scr_cx = Width / 2;
@@ -500,7 +528,9 @@ namespace HasK.Controls.Graph
             Redraw();
             base.OnResize(eventargs);
         }
-
+        /// <summary>
+        /// OnMouseDown event handler
+        /// </summary>
         protected override void OnMouseDown(MouseEventArgs e)
         {
             _pressed_mouse.Add(e.Button);
@@ -510,27 +540,37 @@ namespace HasK.Controls.Graph
                 TrySelectObject(e.Location);
             base.OnMouseDown(e);
         }
-
-        private void TrySelectObject(Point point)
+        /// <summary>
+        /// Used for enumerate all object and check if point in its bounds
+        /// </summary>
+        /// <param name="point"></param>
+        protected void TrySelectObject(Point point)
         {
             var dp = ToRealPoint(point);
             foreach (var obj in _items)
-                if (obj.Selectable && dp.InRect(obj.GetBounds(CreateGraphics(), _view_scale)))
+                if ((obj.Flags & ChartObject.Selectable) > 0)
                 {
-                    Selected = obj;
-                    break;
+                    var sobj = obj as IChartSelectableObject;
+                    if (dp.InRect(sobj.GetBounds(CreateGraphics(), _view_scale)))
+                    {
+                        Selected = obj;
+                        break;
+                    }
                 }
         }
-
+        /// <summary>
+        /// OnMouseUp event handler
+        /// </summary>
         protected override void OnMouseUp(MouseEventArgs e)
         {
             _pressed_mouse.Remove(e.Button);
             base.OnMouseUp(e);
         }
-
+        /// <summary>
+        /// OnMouseMove events handler
+        /// </summary>
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            Focus();
             if (_pressed_mouse.Contains(MoveButton))
             {
                 var dx = e.X - _pressed_move_point.X;
@@ -542,8 +582,10 @@ namespace HasK.Controls.Graph
             }
             base.OnMouseMove(e);
         }
-
-        protected override void OnMouseWheel(MouseEventArgs e)
+        /// <summary>
+        /// Custom OnMouseWheel events handler
+        /// </summary>
+        protected void MyOnMouseWheel(MouseEventArgs e)
         {
             var dd = 2.0;
             if (_view_scale > 50)
@@ -553,45 +595,110 @@ namespace HasK.Controls.Graph
                 dd = -dd;
             if (_view_scale + dd > 2.5)
                 ViewScale += dd;
+            if (_view_scale > 700000)
+                _view_scale = 700000;
             base.OnMouseWheel(e);
         }
-
+        /// <summary>
+        /// OnMouseDoubleClick event handler
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
-            if (e.Button == MoveButton)
+            if (e.Button == SetViewCenterButton)
                 ViewCenterPoint = ToRealPoint(e.Location);
             base.OnMouseDoubleClick(e);
         }
-
-        protected override void OnEnter(EventArgs e)
-        {
-            Focus();
-            base.OnEnter(e);
-        }
         # endregion
-
-        # region Methods of useful tools
-
+        # region Useful tools
         /// <summary>
         /// Converting real coordinates to screen
         /// </summary>
-        /// <param name="real"></param>
+        /// <param name="real">Point in real coordinates</param>
         /// <returns></returns>
-        public Point ToScreenPoint(DPoint real)
+        public PointF ToScreenPoint(DPoint real)
         {
-            return new Point(_scr_cx - (int)((_view_center_point.X - real.X) * _view_scale), _scr_cy + (int)((_view_center_point.Y - real.Y) * _view_scale));
+            return new PointF((float)(_scr_cx - (_view_center_point.X - real.X) * _view_scale), (float)(_scr_cy + (_view_center_point.Y - real.Y) * _view_scale));
         }
-
         /// <summary>
         /// Converting screen coordinates to real
         /// </summary>
-        /// <param name="scr"></param>
+        /// <param name="scr">Point on screen</param>
         /// <returns></returns>
         public DPoint ToRealPoint(Point scr)
         {
             return new DPoint((scr.X - _scr_cx) / _view_scale + _view_center_point.X, _view_center_point.Y - (scr.Y - _scr_cy) / _view_scale);
         }
+        /// <summary>
+        /// Converting screen coordinates to real
+        /// </summary>
+        /// <param name="scr">Point on screen</param>
+        /// <returns></returns>
+        public DPoint ToRealPoint(PointF scr)
+        {
+            return new DPoint((scr.X - _scr_cx) / _view_scale + _view_center_point.X, _view_center_point.Y - (scr.Y - _scr_cy) / _view_scale);
+        }
+        /// <summary>
+        /// Class for effective catching WM_MOUSEWHEEL message to change ViewScale by mouse
+        /// </summary>
+        private static class MouseWheelHandler
+        {
+            public static void Add(Control ctrl, Action<MouseEventArgs> onMouseWheel)
+            {
+                if (ctrl == null || onMouseWheel == null)
+                    throw new ArgumentNullException();
+
+                var filter = new MouseWheelMessageFilter(ctrl, onMouseWheel);
+                Application.AddMessageFilter(filter);
+                ctrl.Disposed += (s, e) => Application.RemoveMessageFilter(filter);
+            }
+
+            class MouseWheelMessageFilter
+                : IMessageFilter
+            {
+                private readonly Control _ctrl;
+                private readonly Action<MouseEventArgs> _onMouseWheel;
+
+                public MouseWheelMessageFilter(Control ctrl, Action<MouseEventArgs> onMouseWheel)
+                {
+                    _ctrl = ctrl;
+                    _onMouseWheel = onMouseWheel;
+                }
+
+                public bool PreFilterMessage(ref Message m)
+                {
+                    var parent = _ctrl.Parent;
+                    if (parent != null && m.Msg == 0x20a) // WM_MOUSEWHEEL, find the control at screen position m.LParam
+                    {
+                        var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+
+                        var clientPos = _ctrl.PointToClient(pos);
+
+                        if (_ctrl.ClientRectangle.Contains(clientPos)
+                         && ReferenceEquals(_ctrl, parent.GetChildAtPoint(parent.PointToClient(pos))))
+                        {
+                            var wParam = m.WParam.ToInt32();
+                            Func<int, MouseButtons, MouseButtons> getButton =
+                                (flag, button) => ((wParam & flag) == flag) ? button : MouseButtons.None;
+
+                            var buttons = getButton(wParam & 0x0001, MouseButtons.Left)
+                                        | getButton(wParam & 0x0010, MouseButtons.Middle)
+                                        | getButton(wParam & 0x0002, MouseButtons.Right)
+                                        | getButton(wParam & 0x0020, MouseButtons.XButton1)
+                                        | getButton(wParam & 0x0040, MouseButtons.XButton2)
+                                        ; // Not matching for these /*MK_SHIFT=0x0004;MK_CONTROL=0x0008*/
+
+                            var delta = wParam >> 16;
+                            var e = new MouseEventArgs(buttons, 0, clientPos.X, clientPos.Y, delta);
+                            _onMouseWheel(e);
+
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
         # endregion
     }
-
 }

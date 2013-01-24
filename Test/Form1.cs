@@ -29,8 +29,13 @@ namespace Test
 
         private void button2_Click(object sender, EventArgs e)
         {
-            chart1.ViewScale *= 2;
+            var fobj = new ChartFunction(chart1, Math.Sin, Color.Black);
+            // var fobj = new ChartFunction(chart1, Math.Ceiling, Color.Black);
+            // fobj.ExtendOnExtremum = true;
+            fobj.Color = Color.Red;
+            chart1.AddObject(fobj);
         }
+
 
         private void chart1_MouseMove(object sender, MouseEventArgs e)
         {

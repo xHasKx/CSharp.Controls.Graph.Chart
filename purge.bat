@@ -1,6 +1,6 @@
 @echo off
 
-del /F /Q /A:H *.suo >nul 2>nul
+rem del /F /Q /A:H *.suo >nul 2>nul
 del /F /Q /S *.pdb >nul 2>nul
 rd /S /Q Test\bin >nul 2>nul
 rd /S /Q Test\bin >nul 2>nul

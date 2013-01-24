@@ -156,6 +156,11 @@
             All items on chart
             </summary>
         </member>
+        <member name="T:HasK.Controls.Graph.Chart.MouseWheelHandler">
+            <summary>
+            Class for effective catching WM_MOUSEWHEEL message to change ViewScale by mouse
+            </summary>
+        </member>
         <member name="T:HasK.Controls.Graph.IChartObject">
             <summary>
             Interface which should be implemented by any object on chart
