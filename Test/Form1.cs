@@ -17,21 +17,34 @@ namespace Test
             InitializeComponent();
         }
 
+        Color[] _colors = new Color[] { Color.Red, Color.Blue, Color.Green, Color.Black, Color.LightBlue, Color.DarkCyan, Color.DarkGray };
+
+        Random rand = new Random();
+
+        Color RandColor()
+        {
+            return _colors[rand.Next(_colors.Length)];
+        }
+
+        DPoint RandPoint()
+        {
+            return new DPoint(chart1.MinX + (chart1.MaxX - chart1.MinX) * rand.NextDouble(),
+                chart1.MinY + (chart1.MaxY - chart1.MinY) * rand.NextDouble());
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            var obj = new ChartPoint(chart1);
-            var r = new Random();
-            obj.Center = new DPoint(chart1.MinX + (chart1.MaxX - chart1.MinX) * r.NextDouble(),
-                chart1.MinY + (chart1.MaxY - chart1.MinY) * r.NextDouble());
-            obj.Color = Color.Red;
+            var s = rand.Next(40);
+            var obj = new ChartPoint(chart1, RandPoint(), RandColor(), new Size(s, s));
             chart1.AddObject(obj);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var fobj = new ChartFunction(chart1, Math.Sin, Color.Black);
+            var funcs = new ChartFunction.MathFunction[] { Math.Sin, Math.Tan, Math.Ceiling, Math.Cos, Math.Atan };
+            var fobj = new ChartFunction(chart1, funcs[rand.Next(funcs.Length)], Color.Black);
             // var fobj = new ChartFunction(chart1, Math.Ceiling, Color.Black);
-            // fobj.ExtendOnExtremum = true;
+            fobj.ExtendOnExtremum = true;
             fobj.Color = Color.Red;
             chart1.AddObject(fobj);
         }
@@ -39,7 +52,32 @@ namespace Test
 
         private void chart1_MouseMove(object sender, MouseEventArgs e)
         {
-            Text = chart1.ViewScale.ToString();
+            Text = chart1.ToRealPoint(e.Location).ToString();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var obj = new ChartTextPoint(chart1, rand.Next(100000).ToString(), RandPoint(), (ChartTextPoint.TextPlaceType)rand.Next(4));
+            obj.Color = RandColor();
+            chart1.AddObject(obj);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var line = new ChartLine(chart1, RandPoint(), RandPoint());
+            line.Color = RandColor();
+            chart1.AddObject(line);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            chart1.RemoveAllObjects();
+            chart1.SetVisibleRect(-11, 11, 11, -11);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            chart1.SetVisibleRect(-11, 11, 11, -11);
         }
     }
 }

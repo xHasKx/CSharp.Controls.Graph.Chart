@@ -408,6 +408,10 @@ namespace HasK.Controls.Graph
                         dd_rel = alast_deriv / aderiv;
                     if (dd_rel < 500.0) // TODO: reimplement extremum's check
                         extremum = true;
+                    if (extremum && Math.Abs(dy) < 0.1)
+                    {
+                        extremum = false;
+                    }
                 }
                 
                 var current_p = Chart.ToScreenPoint(new DPoint(x, y));
