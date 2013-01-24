@@ -429,7 +429,8 @@ namespace HasK.Controls.Graph
                 if (_show_grid)
                     DrawGrid(g);
                 foreach (var obj in _items)
-                    obj.Draw(g);
+                    if ((obj.Flags & ChartObject.Invisible) == 0)
+                        obj.Draw(g);
                 if (_selectable_objects && _selected != null)
                     DrawSelection(g, _selected);
             }
