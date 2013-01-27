@@ -79,5 +79,34 @@ namespace Test
         {
             chart1.SetVisibleRect(-11, 11, 11, -11);
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 10000; i++)
+            {
+                var obj = new ChartPoint(chart1, RandPoint(), RandColor());
+                chart1.Items.Add(obj);
+            }
+            chart1.Redraw();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            var obj = new ChartRectangle(chart1, new DPoint(1, 1), new DSize(4, 4), Color.Red);
+            chart1.PinMovableObjectAndAdd(obj);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            var obj = new ChartEllipse(chart1, new DPoint(1, 1), new DSize(7, 4));
+            chart1.PinMovableObjectAndAdd(obj);
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            var obj = new ChartPolygon(chart1, new DPoint[] { new DPoint(1, 1), new DPoint(1, 3), new DPoint(7, 3), new DPoint(7, 2), new DPoint(5, 2), new DPoint(5, 1), new DPoint(1, 1) });
+            obj.PenWidth = 2;
+            chart1.PinMovableObjectAndAdd(obj);
+        }
     }
 }

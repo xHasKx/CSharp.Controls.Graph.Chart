@@ -9,6 +9,11 @@
             Chart component
             </summary>
         </member>
+        <member name="F:HasK.Controls.Graph.Chart._pinned_moving_object">
+            <summary>
+            Stores the current pinned mouse-movable object
+            </summary>
+        </member>
         <member name="M:HasK.Controls.Graph.Chart.#ctor">
             <summary>
             Create chart control
@@ -55,6 +60,12 @@
             <summary>
             Removing all objects from chart
             </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.PinMovableObjectAndAdd(HasK.Controls.Graph.ChartObject)">
+            <summary>
+            Set the current pinned mouse-movable object
+            </summary>
+            <param name="value"></param>
         </member>
         <member name="M:HasK.Controls.Graph.Chart.DrawGridNum(System.Drawing.Graphics,System.Double,System.Drawing.PointF,System.Boolean)">
             <summary>
@@ -125,7 +136,12 @@
             Converting real coordinates to screen
             </summary>
             <param name="real">Point in real coordinates</param>
-            <returns></returns>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.ToScreenSize(HasK.Controls.Graph.DSize)">
+            <summary>
+            Converting real size to screen
+            </summary>
+            <param name="real">Size in real coordinates</param>
         </member>
         <member name="M:HasK.Controls.Graph.Chart.ToRealPoint(System.Drawing.Point)">
             <summary>
@@ -178,6 +194,11 @@
             Gets or sets mouse button for selecting objects
             </summary>
         </member>
+        <member name="P:HasK.Controls.Graph.Chart.UnpinButton">
+            <summary>
+            Gets or sets mouse button for selecting objects
+            </summary>
+        </member>
         <member name="P:HasK.Controls.Graph.Chart.ShowGridNumbers">
             <summary>
             Get or set option for display numbers on coordinates grid
@@ -203,6 +224,11 @@
             Maximum grid value by Y axis
             </summary>
         </member>
+        <member name="P:HasK.Controls.Graph.Chart.MoveableObjectsGridSize">
+            <summary>
+            Gets or sets the grid size for moveable objects
+            </summary>
+        </member>
         <member name="P:HasK.Controls.Graph.Chart.GridTextFont">
             <summary>
             Gets or sets the font of text on grid
@@ -211,6 +237,11 @@
         <member name="P:HasK.Controls.Graph.Chart.Selected">
             <summary>
             Gets or sets selected object
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.PinnedMovingObject">
+            <summary>
+            Gets the current pinned mouse-movable object
             </summary>
         </member>
         <member name="E:HasK.Controls.Graph.Chart.SelectionChanged">
@@ -253,6 +284,16 @@
             Gets or sets ability of selecting objects
             </summary>
         </member>
+        <member name="P:HasK.Controls.Graph.Chart.CanScaleByMouse">
+            <summary>
+            Gets or sets the option - if user can scale chart by mouse wheel
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.CanMoveByMouse">
+            <summary>
+            Gets or sets option - if user can move chart's coordinat system by mouse
+            </summary>
+        </member>
         <member name="P:HasK.Controls.Graph.Chart.Items">
             <summary>
             All items on chart
@@ -284,6 +325,11 @@
         <member name="F:HasK.Controls.Graph.ChartObject.Selectable">
             <summary>
             If this flag will be in object's flags, then chart will cast object to IChartSelectableObject to determine selected object
+            </summary>
+        </member>
+        <member name="F:HasK.Controls.Graph.ChartObject.MouseMovable">
+            <summary>
+            If this flag will be in object's flags, then chart will cast object to IChartMouseMovableObject for moving object by mouse
             </summary>
         </member>
         <member name="F:HasK.Controls.Graph.ChartObject.Flags">
@@ -339,6 +385,11 @@
             Gets or sets color of object
             </summary>
         </member>
+        <member name="P:HasK.Controls.Graph.ChartVisibleObject.PenWidth">
+            <summary>
+            Gets or sets the width of pen for all drawing lines
+            </summary>
+        </member>
         <member name="T:HasK.Controls.Graph.IChartSelectableObject">
             <summary>
             Interface for all selectable on-chart objects
@@ -350,6 +401,17 @@
             </summary>
             <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
             <param name="view_scale">Current view scale of chart</param>
+        </member>
+        <member name="T:HasK.Controls.Graph.IChartMouseMovableObject">
+            <summary>
+            Interface for all mouse moveable on-chart objects
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.IChartMouseMovableObject.MoveTo(HasK.Controls.Graph.DPoint)">
+            <summary>
+            This method will be called by chart when mouse was moved on chart
+            </summary>
+            <param name="point">Stores the point of mouse cursor tied to grid</param>
         </member>
         <member name="T:HasK.Controls.Graph.ChartPoint">
             <summary>
@@ -556,6 +618,155 @@
             </summary>
             <param name="x">Input parameter - X value</param>
             <returns>Returns function(x)</returns>
+        </member>
+        <member name="T:HasK.Controls.Graph.ChartRectangle">
+            <summary>
+            On-chart rectangle
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartRectangle.#ctor(HasK.Controls.Graph.Chart,HasK.Controls.Graph.DPoint,HasK.Controls.Graph.DSize,System.Drawing.Color)">
+            <summary>
+            Create the on-chart rectangle
+            </summary>
+            <param name="chart">Chart for rectangle</param>
+            <param name="left_bottom">The left-bottom corner point</param>
+            <param name="size">The size of rectangle</param>
+            <param name="color">The color of rectangle</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartRectangle.#ctor(HasK.Controls.Graph.Chart,HasK.Controls.Graph.DPoint,HasK.Controls.Graph.DSize)">
+            <summary>
+            Create the on-chart rectangle
+            </summary>
+            <param name="chart">Chart for rectangle</param>
+            <param name="left_bottom">The left-bottom corner point</param>
+            <param name="size">The size of rectangle</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartRectangle.Draw(System.Drawing.Graphics)">
+            <summary>
+            Chart will calls this method to draw object
+            </summary>
+            <param name="g">Graphics, which should be used for drawing</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartRectangle.GetBounds(System.Drawing.Graphics,System.Double)">
+            <summary>
+            Chart will calls this method to determine visible bounds of object with given view scale and graphics
+            </summary>
+            <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+            <param name="view_scale">Current view scale of chart</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartRectangle.MoveTo(HasK.Controls.Graph.DPoint)">
+            <summary>
+            This method will be called by chart when mouse was moved on chart
+            </summary>
+            <param name="point">Stores the point of mouse cursor tied to grid</param>
+        </member>
+        <member name="P:HasK.Controls.Graph.ChartRectangle.LeftBottom">
+            <summary>
+            Gets or sets the point of left-bottom corner of rectangle
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.ChartRectangle.Size">
+            <summary>
+            Gets or sets the size of rectangle
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.ChartEllipse">
+            <summary>
+            On-chart ellipse
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartEllipse.#ctor(HasK.Controls.Graph.Chart,HasK.Controls.Graph.DPoint,HasK.Controls.Graph.DSize,System.Drawing.Color)">
+            <summary>
+            Create the on-chart ellipse
+            </summary>
+            <param name="chart">Chart for ellipse</param>
+            <param name="left_bottom">The left-bottom corner point</param>
+            <param name="size">The size of ellipse</param>
+            <param name="color">The color of ellipse</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartEllipse.#ctor(HasK.Controls.Graph.Chart,HasK.Controls.Graph.DPoint,HasK.Controls.Graph.DSize)">
+            <summary>
+            Create the on-chart ellipse
+            </summary>
+            <param name="chart">Chart for ellipse</param>
+            <param name="left_bottom">The left-bottom corner point</param>
+            <param name="size">The size of ellipse</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartEllipse.Draw(System.Drawing.Graphics)">
+            <summary>
+            Chart will calls this method to draw object
+            </summary>
+            <param name="g">Graphics, which should be used for drawing</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartEllipse.GetBounds(System.Drawing.Graphics,System.Double)">
+            <summary>
+            Chart will calls this method to determine visible bounds of object with given view scale and graphics
+            </summary>
+            <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+            <param name="view_scale">Current view scale of chart</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartEllipse.MoveTo(HasK.Controls.Graph.DPoint)">
+            <summary>
+            This method will be called by chart when mouse was moved on chart
+            </summary>
+            <param name="point">Stores the point of mouse cursor tied to grid</param>
+        </member>
+        <member name="P:HasK.Controls.Graph.ChartEllipse.LeftBottom">
+            <summary>
+            Gets or sets the point of left-bottom corner of ellipse
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.ChartEllipse.Size">
+            <summary>
+            Gets or sets the size of ellipse
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.ChartPolygon">
+            <summary>
+            On-chart polygon
+            </summary>
+        </member>
+        <member name="F:HasK.Controls.Graph.ChartPolygon._points">
+            <summary>
+            Stores array of polygon's points
+            </summary>
+        </member>
+        <member name="F:HasK.Controls.Graph.ChartPolygon._center">
+            <summary>
+            Stores the relative center of all points
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartPolygon.#ctor(HasK.Controls.Graph.Chart,HasK.Controls.Graph.DPoint[],System.Drawing.Color)">
+            <summary>
+            Create the on-chart polygon
+            </summary>
+            <param name="chart">Chart for polygon</param>
+            <param name="points">The points of polygon</param>
+            <param name="color">The color of polygon</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartPolygon.#ctor(HasK.Controls.Graph.Chart,HasK.Controls.Graph.DPoint[])">
+            <summary>
+            Create the on-chart polygon
+            </summary>
+            <param name="chart">Chart for polygon</param>
+            <param name="points">The points of polygon</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartPolygon.Draw(System.Drawing.Graphics)">
+            <summary>
+            Chart will calls this method to draw object
+            </summary>
+            <param name="g">Graphics, which should be used for drawing</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartPolygon.MoveTo(HasK.Controls.Graph.DPoint)">
+            <summary>
+            This method will be called by chart when mouse was moved on chart
+            </summary>
+            <param name="point">Stores the point of mouse cursor tied to grid</param>
+        </member>
+        <member name="P:HasK.Controls.Graph.ChartPolygon.Points">
+            <summary>
+            Gets or sets the points of this polygon
+            </summary>
         </member>
         <member name="T:HasK.Controls.Graph.DPoint">
             <summary>

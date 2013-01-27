@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Drawing;
 
 namespace HasK.Controls.Graph
 {
+    # region Base classes and interfaces for all on-chart object
     /// <summary>
     /// Interface which should be implemented by any object on chart
     /// </summary>
@@ -16,6 +19,10 @@ namespace HasK.Controls.Graph
         /// If this flag will be in object's flags, then chart will cast object to IChartSelectableObject to determine selected object
         /// </summary>
         public const uint Selectable        = 0x00000002;
+        /// <summary>
+        /// If this flag will be in object's flags, then chart will cast object to IChartMouseMovableObject for moving object by mouse
+        /// </summary>
+        public const uint MouseMovable      = 0x00000004;
         /// <summary>
         /// Stores bit-flags capabilities of object
         /// </summary>
@@ -75,6 +82,23 @@ namespace HasK.Controls.Graph
             }
         }
         /// <summary>
+        /// Gets or sets the width of pen for all drawing lines
+        /// </summary>
+        public float PenWidth
+        {
+            get
+            {
+                if (_pen != null)
+                    return _pen.Width;
+                return 0;
+            }
+            set
+            {
+                if (_pen != null)
+                    _pen.Width = value;
+            }
+        }
+        /// <summary>
         /// Create base class for all visible objects
         /// </summary>
         /// <param name="chart"></param>
@@ -92,6 +116,19 @@ namespace HasK.Controls.Graph
         /// <param name="view_scale">Current view scale of chart</param>
         DRect GetBounds(Graphics g, double view_scale);
     }
+    /// <summary>
+    /// Interface for all mouse moveable on-chart objects
+    /// </summary>
+    public interface IChartMouseMovableObject
+    {
+        /// <summary>
+        /// This method will be called by chart when mouse was moved on chart
+        /// </summary>
+        /// <param name="point">Stores the point of mouse cursor tied to grid</param>
+        void MoveTo(DPoint point);
+    }
+    # endregion
+    # region Concrete on-chart objects classes
     /// <summary>
     /// Simple square point on chart with specified color and size
     /// </summary>
@@ -188,7 +225,6 @@ namespace HasK.Controls.Graph
         /// Gets or sets the end point of line
         /// </summary>
         public DPoint End { get; set; }
-
         /// <summary>
         /// Create line on chart
         /// </summary>
@@ -441,5 +477,218 @@ namespace HasK.Controls.Graph
             }
         }
     }
-
+    /// <summary>
+    /// On-chart rectangle
+    /// </summary>
+    public class ChartRectangle : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
+    {
+        /// <summary>
+        /// Gets or sets the point of left-bottom corner of rectangle
+        /// </summary>
+        public DPoint LeftBottom { get; set; }
+        /// <summary>
+        /// Gets or sets the size of rectangle
+        /// </summary>
+        public DSize Size { get; set; }
+        /// <summary>
+        /// Create the on-chart rectangle
+        /// </summary>
+        /// <param name="chart">Chart for rectangle</param>
+        /// <param name="left_bottom">The left-bottom corner point</param>
+        /// <param name="size">The size of rectangle</param>
+        /// <param name="color">The color of rectangle</param>
+        public ChartRectangle(Chart chart, DPoint left_bottom, DSize size, Color color)
+            : base(chart)
+        {
+            Flags = ChartObject.Selectable | ChartObject.MouseMovable;
+            LeftBottom = left_bottom;
+            Size = size;
+            Color = color;
+        }
+        /// <summary>
+        /// Create the on-chart rectangle
+        /// </summary>
+        /// <param name="chart">Chart for rectangle</param>
+        /// <param name="left_bottom">The left-bottom corner point</param>
+        /// <param name="size">The size of rectangle</param>
+        public ChartRectangle(Chart chart, DPoint left_bottom, DSize size)
+            : this(chart, left_bottom, size, Color.Black) { }
+        /// <summary>
+        /// Chart will calls this method to draw object
+        /// </summary>
+        /// <param name="g">Graphics, which should be used for drawing</param>
+        public override void Draw(Graphics g)
+        {
+            var lb = Chart.ToScreenPoint(LeftBottom);
+            var sz = Chart.ToScreenSize(Size);
+            g.DrawRectangle(_pen, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
+        }
+        /// <summary>
+        /// Chart will calls this method to determine visible bounds of object with given view scale and graphics
+        /// </summary>
+        /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+        /// <param name="view_scale">Current view scale of chart</param>
+        public DRect GetBounds(Graphics g, double view_scale)
+        {
+            return new DRect(LeftBottom.X, LeftBottom.Y, Size.Width, Size.Height);
+        }
+        /// <summary>
+        /// This method will be called by chart when mouse was moved on chart
+        /// </summary>
+        /// <param name="point">Stores the point of mouse cursor tied to grid</param>
+        public void MoveTo(DPoint point)
+        {
+            LeftBottom = new DPoint(point.X - Size.Width / 2, point.Y - Size.Height / 2);
+        }
+    }
+    /// <summary>
+    /// On-chart ellipse
+    /// </summary>
+    public class ChartEllipse : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
+    {
+        /// <summary>
+        /// Gets or sets the point of left-bottom corner of ellipse
+        /// </summary>
+        public DPoint LeftBottom { get; set; }
+        /// <summary>
+        /// Gets or sets the size of ellipse
+        /// </summary>
+        public DSize Size { get; set; }
+        /// <summary>
+        /// Create the on-chart ellipse
+        /// </summary>
+        /// <param name="chart">Chart for ellipse</param>
+        /// <param name="left_bottom">The left-bottom corner point</param>
+        /// <param name="size">The size of ellipse</param>
+        /// <param name="color">The color of ellipse</param>
+        public ChartEllipse(Chart chart, DPoint left_bottom, DSize size, Color color)
+            : base(chart)
+        {
+            Flags = ChartObject.Selectable | ChartObject.MouseMovable;
+            LeftBottom = left_bottom;
+            Size = size;
+            Color = color;
+        }
+        /// <summary>
+        /// Create the on-chart ellipse
+        /// </summary>
+        /// <param name="chart">Chart for ellipse</param>
+        /// <param name="left_bottom">The left-bottom corner point</param>
+        /// <param name="size">The size of ellipse</param>
+        public ChartEllipse(Chart chart, DPoint left_bottom, DSize size)
+            : this(chart, left_bottom, size, Color.Black) { }
+        /// <summary>
+        /// Chart will calls this method to draw object
+        /// </summary>
+        /// <param name="g">Graphics, which should be used for drawing</param>
+        public override void Draw(Graphics g)
+        {
+            var lb = Chart.ToScreenPoint(LeftBottom);
+            var sz = Chart.ToScreenSize(Size);
+            g.DrawEllipse(_pen, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
+        }
+        /// <summary>
+        /// Chart will calls this method to determine visible bounds of object with given view scale and graphics
+        /// </summary>
+        /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+        /// <param name="view_scale">Current view scale of chart</param>
+        public DRect GetBounds(Graphics g, double view_scale)
+        {
+            return new DRect(LeftBottom.X, LeftBottom.Y, Size.Width, Size.Height);
+        }
+        /// <summary>
+        /// This method will be called by chart when mouse was moved on chart
+        /// </summary>
+        /// <param name="point">Stores the point of mouse cursor tied to grid</param>
+        public void MoveTo(DPoint point)
+        {
+            LeftBottom = new DPoint(point.X - Size.Width / 2, point.Y - Size.Height / 2);
+        }
+    }
+    /// <summary>
+    /// On-chart polygon
+    /// </summary>
+    public class ChartPolygon : ChartVisibleObject, IChartMouseMovableObject
+    {
+        /// <summary>
+        /// Stores array of polygon's points
+        /// </summary>
+        protected DPoint[] _points;
+        /// <summary>
+        /// Stores the relative center of all points
+        /// </summary>
+        protected DPoint _center;
+        /// <summary>
+        /// Gets or sets the points of this polygon
+        /// </summary>
+        public DPoint[] Points
+        {
+            get
+            {
+                return _points;
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentException("Points can't be a null");
+                if (value != _points)
+                {
+                    _points = value;
+                    _center = new DPoint();
+                    foreach (var p in _points)
+                    {
+                        _center.X += p.X;
+                        _center.Y += p.Y;
+                    }
+                    var l = _points.Length;
+                    _center.X /= l;
+                    _center.Y /= l;
+                }
+            }
+        }
+        /// <summary>
+        /// Create the on-chart polygon
+        /// </summary>
+        /// <param name="chart">Chart for polygon</param>
+        /// <param name="points">The points of polygon</param>
+        /// <param name="color">The color of polygon</param>
+        public ChartPolygon(Chart chart, DPoint[] points, Color color)
+            : base(chart)
+        {
+            Flags = ChartObject.MouseMovable;
+            Points = points;
+            Color = color;
+        }
+        /// <summary>
+        /// Create the on-chart polygon
+        /// </summary>
+        /// <param name="chart">Chart for polygon</param>
+        /// <param name="points">The points of polygon</param>
+        public ChartPolygon(Chart chart, DPoint[] points)
+            : this(chart, points, Color.Black) { }
+        /// <summary>
+        /// Chart will calls this method to draw object
+        /// </summary>
+        /// <param name="g">Graphics, which should be used for drawing</param>
+        public override void Draw(Graphics g)
+        {
+            g.DrawPolygon(_pen, (from p in _points select Chart.ToScreenPoint(p)).ToArray());
+        }
+        /// <summary>
+        /// This method will be called by chart when mouse was moved on chart
+        /// </summary>
+        /// <param name="point">Stores the point of mouse cursor tied to grid</param>
+        public void MoveTo(DPoint point)
+        {
+            var dx = point.X - _center.X;
+            var dy = point.Y - _center.Y;
+            var len = _points.Length;
+            var new_points = new DPoint[len];
+            for (int i = 0; i < len; i++)
+                new_points[i] = new DPoint(_points[i].X + dx, _points[i].Y + dy);
+            _center = point;
+            _points = new_points;
+        }
+    }
+    # endregion
 }

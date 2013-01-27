@@ -61,6 +61,10 @@ namespace HasK.Controls.Graph
         /// </summary>
         public MouseButtons SelectButton { get; set; }
         /// <summary>
+        /// Gets or sets mouse button for selecting objects
+        /// </summary>
+        public MouseButtons UnpinButton { get; set; }
+        /// <summary>
         /// Get or set option for display numbers on coordinates grid
         /// </summary>
         public bool ShowGridNumbers
@@ -138,6 +142,10 @@ namespace HasK.Controls.Graph
             }
         }
         /// <summary>
+        /// Gets or sets the grid size for moveable objects
+        /// </summary>
+        public double MoveableObjectsGridSize { get; set; }
+        /// <summary>
         /// Gets or sets the font of text on grid
         /// </summary>
         public Font GridTextFont { get; set; }
@@ -160,6 +168,20 @@ namespace HasK.Controls.Graph
                         SelectionChanged(this, old_selected, _selected);
                     Redraw();
                 }
+            }
+        }
+        /// <summary>
+        /// Stores the current pinned mouse-movable object
+        /// </summary>
+        protected ChartObject _pinned_moving_object;
+        /// <summary>
+        /// Gets the current pinned mouse-movable object
+        /// </summary>
+        public ChartObject PinnedMovingObject
+        {
+            get
+            {
+                return _pinned_moving_object;
             }
         }
         /// <summary>
@@ -312,6 +334,14 @@ namespace HasK.Controls.Graph
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the option - if user can scale chart by mouse wheel
+        /// </summary>
+        public bool CanScaleByMouse { get; set; }
+        /// <summary>
+        /// Gets or sets option - if user can move chart's coordinat system by mouse
+        /// </summary>
+        public bool CanMoveByMouse { get; set; }
         # endregion
         /// <summary>
         /// Create chart control
@@ -339,6 +369,7 @@ namespace HasK.Controls.Graph
             Suspended = true;
             MoveButton = MouseButtons.Right;
             SelectButton = MouseButtons.Left;
+            UnpinButton = MouseButtons.Left;
             SetViewCenterButton = MouseButtons.Left;
             GridColor = Color.Gray;
             GridTextFont = new Font("Tahoma", 10);
@@ -346,7 +377,10 @@ namespace HasK.Controls.Graph
             ShowGridNumbers = true;
             BackColor = Color.White;
             SelectionColor = Color.Black;
+            CanScaleByMouse = true;
+            CanMoveByMouse = true;
             SetGridMinMax(-10, 10, -10, 10);
+            MoveableObjectsGridSize = 0.05;
             SetVisibleRect(-11, 11, 11, -11);
             Suspended = false;
         }
@@ -419,6 +453,30 @@ namespace HasK.Controls.Graph
         /// All items on chart
         /// </summary>
         public IList<ChartObject> Items { get { return _items; } }
+        /// <summary>
+        /// Set the current pinned mouse-movable object
+        /// </summary>
+        /// <param name="value"></param>
+        public void PinMovableObjectAndAdd(ChartObject value)
+        {
+            if (value == null)
+                _pinned_moving_object = null;
+            else if ((value.Flags & ChartObject.MouseMovable) > 0)
+            {
+                var mobj = value as IChartMouseMovableObject;
+                if (mobj != null)
+                {
+                    _pinned_moving_object = value;
+                    if (!_items.Contains(value))
+                        _items.Add(value);
+                    Redraw();
+                }
+                else
+                    throw new ArgumentException("Can't cast value as IChartMouseMovableObject");
+            }
+            else
+                throw new ArgumentException("value hasn't flag ChartObject.MouseMovable");
+        }
         # endregion
         # region Methods for drawing and processing events
         private void Draw(Graphics g)
@@ -537,7 +595,9 @@ namespace HasK.Controls.Graph
             _pressed_mouse.Add(e.Button);
             if (e.Button == MoveButton)
                 _pressed_move_point = e.Location;
-            if (_selectable_objects && e.Button == SelectButton)
+            if (_pinned_moving_object != null && e.Button == UnpinButton)
+                PinMovableObjectAndAdd(null);
+            else if (_selectable_objects && e.Button == SelectButton)
                 TrySelectObject(e.Location);
             base.OnMouseDown(e);
         }
@@ -572,7 +632,17 @@ namespace HasK.Controls.Graph
         /// </summary>
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (_pressed_mouse.Contains(MoveButton))
+            if (_pinned_moving_object != null)
+            {
+                var rp = ToRealPoint(e.Location);
+                var mo = _pinned_moving_object as IChartMouseMovableObject;
+                var mgs = MoveableObjectsGridSize;
+                rp.X = Math.Ceiling(rp.X / mgs) * mgs;
+                rp.Y = Math.Ceiling(rp.Y / mgs) * mgs;
+                mo.MoveTo(rp);
+                Redraw();
+            }
+            if (_pressed_mouse.Contains(MoveButton) && CanMoveByMouse)
             {
                 var dx = e.X - _pressed_move_point.X;
                 var dy = e.Y - _pressed_move_point.Y;
@@ -588,16 +658,19 @@ namespace HasK.Controls.Graph
         /// </summary>
         protected void MyOnMouseWheel(MouseEventArgs e)
         {
-            var dd = 2.0;
-            if (_view_scale > 50)
-                dd = _view_scale / 10;
+            if (CanScaleByMouse) // TODO: reimplement this monkey-code
+            {
+                var dd = 2.0;
+                if (_view_scale > 50)
+                    dd = _view_scale / 10;
 
-            if (e.Delta < 0)
-                dd = -dd;
-            if (_view_scale + dd > 2.5)
-                ViewScale += dd;
-            if (_view_scale > 700000)
-                _view_scale = 700000;
+                if (e.Delta < 0)
+                    dd = -dd;
+                if (_view_scale + dd > 2.5)
+                    ViewScale += dd;
+                if (_view_scale > 700000)
+                    _view_scale = 700000;
+            }
             base.OnMouseWheel(e);
         }
         /// <summary>
@@ -606,7 +679,7 @@ namespace HasK.Controls.Graph
         /// <param name="e"></param>
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
-            if (e.Button == SetViewCenterButton)
+            if (e.Button == SetViewCenterButton && CanMoveByMouse)
                 ViewCenterPoint = ToRealPoint(e.Location);
             base.OnMouseDoubleClick(e);
         }
@@ -616,10 +689,17 @@ namespace HasK.Controls.Graph
         /// Converting real coordinates to screen
         /// </summary>
         /// <param name="real">Point in real coordinates</param>
-        /// <returns></returns>
         public PointF ToScreenPoint(DPoint real)
         {
             return new PointF((float)(_scr_cx - (_view_center_point.X - real.X) * _view_scale), (float)(_scr_cy + (_view_center_point.Y - real.Y) * _view_scale));
+        }
+        /// <summary>
+        /// Converting real size to screen
+        /// </summary>
+        /// <param name="real">Size in real coordinates</param>
+        public SizeF ToScreenSize(DSize real)
+        {
+            return new SizeF((float)(real.Width * _view_scale), (float)(real.Height * _view_scale));
         }
         /// <summary>
         /// Converting screen coordinates to real
