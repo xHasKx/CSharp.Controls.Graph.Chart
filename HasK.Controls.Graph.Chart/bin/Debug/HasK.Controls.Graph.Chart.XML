@@ -239,6 +239,11 @@
             Gets or sets selected object
             </summary>
         </member>
+        <member name="P:HasK.Controls.Graph.Chart.SelectionBoxesSize">
+            <summary>
+            Gets or sets the size of selection boxes around selected object
+            </summary>
+        </member>
         <member name="P:HasK.Controls.Graph.Chart.PinnedMovingObject">
             <summary>
             Gets the current pinned mouse-movable object
@@ -247,6 +252,11 @@
         <member name="E:HasK.Controls.Graph.Chart.SelectionChanged">
             <summary>
             Occurs when selection is changed
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.CanClearSelection">
+            <summary>
+            Gets or sets the option which indicates what user can clear selection by clicking free area
             </summary>
         </member>
         <member name="P:HasK.Controls.Graph.Chart.ViewCenterPoint">
@@ -412,6 +422,11 @@
             This method will be called by chart when mouse was moved on chart
             </summary>
             <param name="point">Stores the point of mouse cursor tied to grid</param>
+        </member>
+        <member name="P:HasK.Controls.Graph.IChartMouseMovableObject.Center">
+            <summary>
+            Gets the center point of movable object
+            </summary>
         </member>
         <member name="T:HasK.Controls.Graph.ChartPoint">
             <summary>
@@ -660,6 +675,11 @@
             </summary>
             <param name="point">Stores the point of mouse cursor tied to grid</param>
         </member>
+        <member name="P:HasK.Controls.Graph.ChartRectangle.Center">
+            <summary>
+            Gets the center point of movable object
+            </summary>
+        </member>
         <member name="P:HasK.Controls.Graph.ChartRectangle.LeftBottom">
             <summary>
             Gets or sets the point of left-bottom corner of rectangle
@@ -710,6 +730,11 @@
             This method will be called by chart when mouse was moved on chart
             </summary>
             <param name="point">Stores the point of mouse cursor tied to grid</param>
+        </member>
+        <member name="P:HasK.Controls.Graph.ChartEllipse.Center">
+            <summary>
+            Gets the center point of movable object
+            </summary>
         </member>
         <member name="P:HasK.Controls.Graph.ChartEllipse.LeftBottom">
             <summary>
@@ -762,6 +787,18 @@
             This method will be called by chart when mouse was moved on chart
             </summary>
             <param name="point">Stores the point of mouse cursor tied to grid</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.ChartPolygon.GetBounds(System.Drawing.Graphics,System.Double)">
+            <summary>
+            Chart will calls this method to determine visible bounds of object with given view scale and graphics
+            </summary>
+            <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+            <param name="view_scale">Current view scale of chart</param>
+        </member>
+        <member name="P:HasK.Controls.Graph.ChartPolygon.Center">
+            <summary>
+            Gets the center point of movable object
+            </summary>
         </member>
         <member name="P:HasK.Controls.Graph.ChartPolygon.Points">
             <summary>

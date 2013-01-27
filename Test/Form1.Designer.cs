@@ -143,6 +143,7 @@
             this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.chart1.CanClearSelection = false;
             this.chart1.CanMoveByMouse = true;
             this.chart1.CanScaleByMouse = true;
             this.chart1.GridColor = System.Drawing.Color.Gray;
@@ -158,6 +159,7 @@
             this.chart1.SelectableObjects = true;
             this.chart1.SelectButton = System.Windows.Forms.MouseButtons.Left;
             this.chart1.Selected = null;
+            this.chart1.SelectionBoxesSize = new System.Drawing.SizeF(8F, 8F);
             this.chart1.SelectionColor = System.Drawing.Color.Navy;
             this.chart1.SetViewCenterButton = System.Windows.Forms.MouseButtons.Left;
             this.chart1.ShowGrid = true;

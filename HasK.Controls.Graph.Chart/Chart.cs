@@ -171,6 +171,10 @@ namespace HasK.Controls.Graph
             }
         }
         /// <summary>
+        /// Gets or sets the size of selection boxes around selected object
+        /// </summary>
+        public SizeF SelectionBoxesSize { get; set; }
+        /// <summary>
         /// Stores the current pinned mouse-movable object
         /// </summary>
         protected ChartObject _pinned_moving_object;
@@ -195,6 +199,10 @@ namespace HasK.Controls.Graph
         /// Occurs when selection is changed
         /// </summary>
         public event SelChanged SelectionChanged;
+        /// <summary>
+        /// Gets or sets the option which indicates what user can clear selection by clicking free area
+        /// </summary>
+        public bool CanClearSelection { get; set; }
         /// <summary>
         /// Gets or sets the center point of view
         /// </summary>
@@ -379,6 +387,7 @@ namespace HasK.Controls.Graph
             SelectionColor = Color.Black;
             CanScaleByMouse = true;
             CanMoveByMouse = true;
+            SelectionBoxesSize = new SizeF(4, 4);
             SetGridMinMax(-10, 10, -10, 10);
             MoveableObjectsGridSize = 0.05;
             SetVisibleRect(-11, 11, 11, -11);
@@ -435,7 +444,7 @@ namespace HasK.Controls.Graph
             if (res)
             {
                 if (obj == _selected)
-                    _selected = null;
+                    Selected = null;
                 Redraw();
             }
             return res;
@@ -551,7 +560,7 @@ namespace HasK.Controls.Graph
             {
                 var sobj = obj as IChartSelectableObject;
                 var b = sobj.GetBounds(g, _view_scale);
-                var sel_size = new Size(4, 4);
+                var sel_size = SelectionBoxesSize;
 
                 var p1 = ToScreenPoint(new DPoint(b.X, b.Y));
                 var p2 = ToScreenPoint(new DPoint(b.X + b.Width, b.Y));
@@ -608,16 +617,27 @@ namespace HasK.Controls.Graph
         protected void TrySelectObject(Point point)
         {
             var dp = ToRealPoint(point);
+            var min_s = 1e+100d;
+            ChartObject selected = null;
             foreach (var obj in _items)
                 if ((obj.Flags & ChartObject.Selectable) > 0)
                 {
                     var sobj = obj as IChartSelectableObject;
-                    if (dp.InRect(sobj.GetBounds(CreateGraphics(), _view_scale)))
+                    var bounds = sobj.GetBounds(CreateGraphics(), _view_scale);
+                    if (dp.InRect(bounds))
                     {
-                        Selected = obj;
-                        break;
+                        var cs = bounds.Width * bounds.Height;
+                        if (cs < min_s)
+                        {
+                            min_s = cs;
+                            selected = obj;
+                        }
                     }
                 }
+            if (CanClearSelection)
+                Selected = selected;
+            else if (selected != null)
+                Selected = selected;
         }
         /// <summary>
         /// OnMouseUp event handler

@@ -122,6 +122,10 @@ namespace HasK.Controls.Graph
     public interface IChartMouseMovableObject
     {
         /// <summary>
+        /// Gets the center point of movable object
+        /// </summary>
+        DPoint Center { get; }
+        /// <summary>
         /// This method will be called by chart when mouse was moved on chart
         /// </summary>
         /// <param name="point">Stores the point of mouse cursor tied to grid</param>
@@ -483,6 +487,16 @@ namespace HasK.Controls.Graph
     public class ChartRectangle : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
     {
         /// <summary>
+        /// Gets the center point of movable object
+        /// </summary>
+        public DPoint Center
+        {
+            get
+            {
+                return new DPoint(LeftBottom.X + Size.Width / 2, LeftBottom.Y + Size.Height / 2);
+            }
+        }
+        /// <summary>
         /// Gets or sets the point of left-bottom corner of rectangle
         /// </summary>
         public DPoint LeftBottom { get; set; }
@@ -547,6 +561,16 @@ namespace HasK.Controls.Graph
     public class ChartEllipse : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
     {
         /// <summary>
+        /// Gets the center point of movable object
+        /// </summary>
+        public DPoint Center
+        {
+            get
+            {
+                return new DPoint(LeftBottom.X + Size.Width / 2, LeftBottom.Y + Size.Height / 2);
+            }
+        }
+        /// <summary>
         /// Gets or sets the point of left-bottom corner of ellipse
         /// </summary>
         public DPoint LeftBottom { get; set; }
@@ -608,8 +632,18 @@ namespace HasK.Controls.Graph
     /// <summary>
     /// On-chart polygon
     /// </summary>
-    public class ChartPolygon : ChartVisibleObject, IChartMouseMovableObject
+    public class ChartPolygon : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
     {
+        /// <summary>
+        /// Gets the center point of movable object
+        /// </summary>
+        public DPoint Center
+        {
+            get
+            {
+                return _center;
+            }
+        }
         /// <summary>
         /// Stores array of polygon's points
         /// </summary>
@@ -655,7 +689,7 @@ namespace HasK.Controls.Graph
         public ChartPolygon(Chart chart, DPoint[] points, Color color)
             : base(chart)
         {
-            Flags = ChartObject.MouseMovable;
+            Flags = ChartObject.Selectable | ChartObject.MouseMovable;
             Points = points;
             Color = color;
         }
@@ -688,6 +722,26 @@ namespace HasK.Controls.Graph
                 new_points[i] = new DPoint(_points[i].X + dx, _points[i].Y + dy);
             _center = point;
             _points = new_points;
+        }
+        /// <summary>
+        /// Chart will calls this method to determine visible bounds of object with given view scale and graphics
+        /// </summary>
+        /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+        /// <param name="view_scale">Current view scale of chart</param>
+        public DRect GetBounds(Graphics g, double view_scale)
+        {
+            var min_p = new DPoint(_points[0].X, _points[0].Y);
+            var max_p = new DPoint(_points[0].X, _points[0].Y);
+            foreach (var p in _points)
+            {
+                if (p.X < min_p.X) min_p.X = p.X;
+                if (p.Y < min_p.Y) min_p.Y = p.Y;
+                if (p.X > max_p.X) max_p.X = p.X;
+                if (p.Y > max_p.Y) max_p.Y = p.Y;
+            }
+            var w = max_p.X - min_p.X;
+            var h = max_p.Y - min_p.Y;
+            return new DRect(min_p.X, min_p.Y, w, h);
         }
     }
     # endregion
