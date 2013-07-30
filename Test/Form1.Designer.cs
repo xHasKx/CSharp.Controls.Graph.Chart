@@ -130,6 +130,7 @@
             // 
             // button9
             // 
+            this.button9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button9.Location = new System.Drawing.Point(757, 70);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(151, 23);
@@ -149,11 +150,11 @@
             this.chart1.GridColor = System.Drawing.Color.Gray;
             this.chart1.GridTextFont = new System.Drawing.Font("Tahoma", 10F);
             this.chart1.Location = new System.Drawing.Point(12, 12);
-            this.chart1.MaxX = 10D;
-            this.chart1.MaxY = 10D;
-            this.chart1.MinX = -10D;
-            this.chart1.MinY = -10D;
-            this.chart1.MoveableObjectsGridSize = 0.05D;
+            this.chart1.MaxX = 10;
+            this.chart1.MaxY = 10;
+            this.chart1.MinX = -10;
+            this.chart1.MinY = -10;
+            this.chart1.MoveableObjectsGridSize = 0.05;
             this.chart1.MoveButton = System.Windows.Forms.MouseButtons.Right;
             this.chart1.Name = "chart1";
             this.chart1.SelectableObjects = true;
@@ -168,7 +169,7 @@
             this.chart1.Suspended = false;
             this.chart1.TabIndex = 0;
             this.chart1.UnpinButton = System.Windows.Forms.MouseButtons.Left;
-            this.chart1.ViewScale = 16.681818181818183D;
+            this.chart1.ViewScale = 16.681818181818183;
             this.chart1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
             // 
             // Form1

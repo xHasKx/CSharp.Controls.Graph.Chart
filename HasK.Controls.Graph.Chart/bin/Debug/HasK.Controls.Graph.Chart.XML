@@ -4,324 +4,6 @@
         <name>HasK.Controls.Graph.Chart</name>
     </assembly>
     <members>
-        <member name="T:HasK.Controls.Graph.Chart">
-            <summary>
-            Chart component
-            </summary>
-        </member>
-        <member name="F:HasK.Controls.Graph.Chart._pinned_moving_object">
-            <summary>
-            Stores the current pinned mouse-movable object
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.#ctor">
-            <summary>
-            Create chart control
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.Redraw">
-            <summary>
-            Redraw chart and all objects
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.SetDefaults">
-            <summary>
-            Set default values for main chart properties
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.SetGridMinMax(System.Double,System.Double,System.Double,System.Double)">
-            <summary>
-            Set grid bounds
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.SetVisibleRect(System.Double,System.Double,System.Double,System.Double)">
-            <summary>
-            Set visible rectangle on chart in real coordinates
-            </summary>
-            <param name="x_left">Left position</param>
-            <param name="y_top">Top position</param>
-            <param name="x_right">Right porition</param>
-            <param name="y_bottom">Bottom position</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.AddObject(HasK.Controls.Graph.ChartObject)">
-            <summary>
-            Add object to chart
-            </summary>
-            <param name="obj">Object which should be added</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.RemoveObject(HasK.Controls.Graph.ChartObject)">
-            <summary>
-            Remove object from chart
-            </summary>
-            <param name="obj">Object which should be removed</param>
-            <returns>Returns true if object was removed, otherwise false</returns>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.RemoveAllObjects">
-            <summary>
-            Removing all objects from chart
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.PinMovableObjectAndAdd(HasK.Controls.Graph.ChartObject)">
-            <summary>
-            Set the current pinned mouse-movable object
-            </summary>
-            <param name="value"></param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.DrawGridNum(System.Drawing.Graphics,System.Double,System.Drawing.PointF,System.Boolean)">
-            <summary>
-            Draw double value near grid line
-            </summary>
-            <param name="g">Graphics</param>
-            <param name="value">Double value</param>
-            <param name="where">Point in screen coordinates where value should be</param>
-            <param name="on_the_right">If true - draw value on the right, otherwise - from the bottom</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.DrawGrid(System.Drawing.Graphics)">
-            <summary>
-            Draw simple grid on chart
-            </summary>
-            <param name="g">Graphics which should be used for drawing</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.DrawSelection(System.Drawing.Graphics,HasK.Controls.Graph.ChartObject)">
-            <summary>
-            Draw simple selection around selected object
-            </summary>
-            <param name="g">Graphics which should be used for drawing</param>
-            <param name="obj">Selected object</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.OnPaint(System.Windows.Forms.PaintEventArgs)">
-            <summary>
-            OnPaint event handler
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.OnResize(System.EventArgs)">
-            <summary>
-            OnResize event handler
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            OnMouseDown event handler
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.TrySelectObject(System.Drawing.Point)">
-            <summary>
-            Used for enumerate all object and check if point in its bounds
-            </summary>
-            <param name="point"></param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            OnMouseUp event handler
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            OnMouseMove events handler
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.MyOnMouseWheel(System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Custom OnMouseWheel events handler
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.OnMouseDoubleClick(System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            OnMouseDoubleClick event handler
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.ToScreenPoint(HasK.Controls.Graph.DPoint)">
-            <summary>
-            Converting real coordinates to screen
-            </summary>
-            <param name="real">Point in real coordinates</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.ToScreenSize(HasK.Controls.Graph.DSize)">
-            <summary>
-            Converting real size to screen
-            </summary>
-            <param name="real">Size in real coordinates</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.ToRealPoint(System.Drawing.Point)">
-            <summary>
-            Converting screen coordinates to real
-            </summary>
-            <param name="scr">Point on screen</param>
-            <returns></returns>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.ToRealPoint(System.Drawing.PointF)">
-            <summary>
-            Converting screen coordinates to real
-            </summary>
-            <param name="scr">Point on screen</param>
-            <returns></returns>
-        </member>
-        <member name="F:HasK.Controls.Graph.Chart.components">
-            <summary> 
-            Требуется переменная конструктора.
-            </summary>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.Dispose(System.Boolean)">
-            <summary> 
-            Освободить все используемые ресурсы.
-            </summary>
-            <param name="disposing">истинно, если управляемый ресурс должен быть удален; иначе ложно.</param>
-        </member>
-        <member name="M:HasK.Controls.Graph.Chart.InitializeComponent">
-            <summary> 
-            Обязательный метод для поддержки конструктора - не изменяйте 
-            содержимое данного метода при помощи редактора кода.
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.ShowGrid">
-            <summary>
-            Shows is coordinates grid should be displayed
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.MoveButton">
-            <summary>
-            Gets or sets mouse button for moving chart coordinates system
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.SetViewCenterButton">
-            <summary>
-            Gets or sets mouse button for centering view in specified point
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.SelectButton">
-            <summary>
-            Gets or sets mouse button for selecting objects
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.UnpinButton">
-            <summary>
-            Gets or sets mouse button for selecting objects
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.ShowGridNumbers">
-            <summary>
-            Get or set option for display numbers on coordinates grid
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.MinX">
-            <summary>
-            Minumum grid value by X axis
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.MinY">
-            <summary>
-            Minumum grid value by Y axis
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.MaxX">
-            <summary>
-            Maximum grid value by X axis
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.MaxY">
-            <summary>
-            Maximum grid value by Y axis
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.MoveableObjectsGridSize">
-            <summary>
-            Gets or sets the grid size for moveable objects
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.GridTextFont">
-            <summary>
-            Gets or sets the font of text on grid
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.Selected">
-            <summary>
-            Gets or sets selected object
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.SelectionBoxesSize">
-            <summary>
-            Gets or sets the size of selection boxes around selected object
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.PinnedMovingObject">
-            <summary>
-            Gets the current pinned mouse-movable object
-            </summary>
-        </member>
-        <member name="E:HasK.Controls.Graph.Chart.SelectionChanged">
-            <summary>
-            Occurs when selection is changed
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.CanClearSelection">
-            <summary>
-            Gets or sets the option which indicates what user can clear selection by clicking free area
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.ViewCenterPoint">
-            <summary>
-            Gets or sets the center point of view
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.ViewScale">
-            <summary>
-            Gets or sets view scale
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.Suspended">
-            <summary>
-            Gets or sets the frozen state of graph
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.GridColor">
-            <summary>
-            Gets or sets the color of coordinates grid
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.BackColor">
-            <summary>
-            Gets or sets the background color
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.SelectionColor">
-            <summary>
-            Color of selection
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.SelectableObjects">
-            <summary>
-            Gets or sets ability of selecting objects
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.CanScaleByMouse">
-            <summary>
-            Gets or sets the option - if user can scale chart by mouse wheel
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.CanMoveByMouse">
-            <summary>
-            Gets or sets option - if user can move chart's coordinat system by mouse
-            </summary>
-        </member>
-        <member name="P:HasK.Controls.Graph.Chart.Items">
-            <summary>
-            All items on chart
-            </summary>
-        </member>
-        <member name="T:HasK.Controls.Graph.Chart.SelChanged">
-            <summary>
-            Delegate for SelectionChanged event
-            </summary>
-            <param name="chart">Chart with selected object</param>
-            <param name="old_selected">The object which was previously selected</param>
-            <param name="now_selected">The object which is current selected</param>
-        </member>
-        <member name="T:HasK.Controls.Graph.Chart.MouseWheelHandler">
-            <summary>
-            Class for effective catching WM_MOUSEWHEEL message to change ViewScale by mouse
-            </summary>
-        </member>
         <member name="T:HasK.Controls.Graph.ChartObject">
             <summary>
             Interface which should be implemented by any object on chart
@@ -906,6 +588,324 @@
             Convert DRect object to string representation
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:HasK.Controls.Graph.Chart">
+            <summary>
+            Chart component
+            </summary>
+        </member>
+        <member name="F:HasK.Controls.Graph.Chart._pinned_moving_object">
+            <summary>
+            Stores the current pinned mouse-movable object
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.#ctor">
+            <summary>
+            Create chart control
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.Redraw">
+            <summary>
+            Redraw chart and all objects
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.SetDefaults">
+            <summary>
+            Set default values for main chart properties
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.SetGridMinMax(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Set grid bounds
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.SetVisibleRect(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Set visible rectangle on chart in real coordinates
+            </summary>
+            <param name="x_left">Left position</param>
+            <param name="y_top">Top position</param>
+            <param name="x_right">Right porition</param>
+            <param name="y_bottom">Bottom position</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.AddObject(HasK.Controls.Graph.ChartObject)">
+            <summary>
+            Add object to chart
+            </summary>
+            <param name="obj">Object which should be added</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.RemoveObject(HasK.Controls.Graph.ChartObject)">
+            <summary>
+            Remove object from chart
+            </summary>
+            <param name="obj">Object which should be removed</param>
+            <returns>Returns true if object was removed, otherwise false</returns>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.RemoveAllObjects">
+            <summary>
+            Removing all objects from chart
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.PinMovableObjectAndAdd(HasK.Controls.Graph.ChartObject)">
+            <summary>
+            Set the current pinned mouse-movable object
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.DrawGridNum(System.Drawing.Graphics,System.Double,System.Drawing.PointF,System.Boolean)">
+            <summary>
+            Draw double value near grid line
+            </summary>
+            <param name="g">Graphics</param>
+            <param name="value">Double value</param>
+            <param name="where">Point in screen coordinates where value should be</param>
+            <param name="on_the_right">If true - draw value on the right, otherwise - from the bottom</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.DrawGrid(System.Drawing.Graphics)">
+            <summary>
+            Draw simple grid on chart
+            </summary>
+            <param name="g">Graphics which should be used for drawing</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.DrawSelection(System.Drawing.Graphics,HasK.Controls.Graph.ChartObject)">
+            <summary>
+            Draw simple selection around selected object
+            </summary>
+            <param name="g">Graphics which should be used for drawing</param>
+            <param name="obj">Selected object</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            OnPaint event handler
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.OnResize(System.EventArgs)">
+            <summary>
+            OnResize event handler
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            OnMouseDown event handler
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.TrySelectObject(System.Drawing.Point)">
+            <summary>
+            Used for enumerate all object and check if point in its bounds
+            </summary>
+            <param name="point"></param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            OnMouseUp event handler
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            OnMouseMove events handler
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.MyOnMouseWheel(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Custom OnMouseWheel events handler
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.OnMouseDoubleClick(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            OnMouseDoubleClick event handler
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.ToScreenPoint(HasK.Controls.Graph.DPoint)">
+            <summary>
+            Converting real coordinates to screen
+            </summary>
+            <param name="real">Point in real coordinates</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.ToScreenSize(HasK.Controls.Graph.DSize)">
+            <summary>
+            Converting real size to screen
+            </summary>
+            <param name="real">Size in real coordinates</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.ToRealPoint(System.Drawing.Point)">
+            <summary>
+            Converting screen coordinates to real
+            </summary>
+            <param name="scr">Point on screen</param>
+            <returns></returns>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.ToRealPoint(System.Drawing.PointF)">
+            <summary>
+            Converting screen coordinates to real
+            </summary>
+            <param name="scr">Point on screen</param>
+            <returns></returns>
+        </member>
+        <member name="F:HasK.Controls.Graph.Chart.components">
+            <summary> 
+            Требуется переменная конструктора.
+            </summary>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.Dispose(System.Boolean)">
+            <summary> 
+            Освободить все используемые ресурсы.
+            </summary>
+            <param name="disposing">истинно, если управляемый ресурс должен быть удален; иначе ложно.</param>
+        </member>
+        <member name="M:HasK.Controls.Graph.Chart.InitializeComponent">
+            <summary> 
+            Обязательный метод для поддержки конструктора - не изменяйте 
+            содержимое данного метода при помощи редактора кода.
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ShowGrid">
+            <summary>
+            Shows is coordinates grid should be displayed
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MoveButton">
+            <summary>
+            Gets or sets mouse button for moving chart coordinates system
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.SetViewCenterButton">
+            <summary>
+            Gets or sets mouse button for centering view in specified point
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.SelectButton">
+            <summary>
+            Gets or sets mouse button for selecting objects
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.UnpinButton">
+            <summary>
+            Gets or sets mouse button for selecting objects
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ShowGridNumbers">
+            <summary>
+            Get or set option for display numbers on coordinates grid
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MinX">
+            <summary>
+            Minumum grid value by X axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MinY">
+            <summary>
+            Minumum grid value by Y axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MaxX">
+            <summary>
+            Maximum grid value by X axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MaxY">
+            <summary>
+            Maximum grid value by Y axis
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.MoveableObjectsGridSize">
+            <summary>
+            Gets or sets the grid size for moveable objects
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.GridTextFont">
+            <summary>
+            Gets or sets the font of text on grid
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.Selected">
+            <summary>
+            Gets or sets selected object
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.SelectionBoxesSize">
+            <summary>
+            Gets or sets the size of selection boxes around selected object
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.PinnedMovingObject">
+            <summary>
+            Gets the current pinned mouse-movable object
+            </summary>
+        </member>
+        <member name="E:HasK.Controls.Graph.Chart.SelectionChanged">
+            <summary>
+            Occurs when selection is changed
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.CanClearSelection">
+            <summary>
+            Gets or sets the option which indicates what user can clear selection by clicking free area
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ViewCenterPoint">
+            <summary>
+            Gets or sets the center point of view
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.ViewScale">
+            <summary>
+            Gets or sets view scale
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.Suspended">
+            <summary>
+            Gets or sets the frozen state of graph
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.GridColor">
+            <summary>
+            Gets or sets the color of coordinates grid
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.BackColor">
+            <summary>
+            Gets or sets the background color
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.SelectionColor">
+            <summary>
+            Color of selection
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.SelectableObjects">
+            <summary>
+            Gets or sets ability of selecting objects
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.CanScaleByMouse">
+            <summary>
+            Gets or sets the option - if user can scale chart by mouse wheel
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.CanMoveByMouse">
+            <summary>
+            Gets or sets option - if user can move chart's coordinat system by mouse
+            </summary>
+        </member>
+        <member name="P:HasK.Controls.Graph.Chart.Items">
+            <summary>
+            All items on chart
+            </summary>
+        </member>
+        <member name="T:HasK.Controls.Graph.Chart.SelChanged">
+            <summary>
+            Delegate for SelectionChanged event
+            </summary>
+            <param name="chart">Chart with selected object</param>
+            <param name="old_selected">The object which was previously selected</param>
+            <param name="now_selected">The object which is current selected</param>
+        </member>
+        <member name="T:HasK.Controls.Graph.Chart.MouseWheelHandler">
+            <summary>
+            Class for effective catching WM_MOUSEWHEEL message to change ViewScale by mouse
+            </summary>
         </member>
     </members>
 </doc>

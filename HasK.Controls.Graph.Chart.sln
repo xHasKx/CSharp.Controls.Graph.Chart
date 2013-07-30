@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HasK.Controls.Graph.Chart", "HasK.Controls.Graph.Chart\HasK.Controls.Graph.Chart.csproj", "{91E8C5CB-63C4-49B6-AF24-DB5AD3A69847}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{CD3A0F89-6E0F-4062-8C21-AC362CDDF6B6}"
