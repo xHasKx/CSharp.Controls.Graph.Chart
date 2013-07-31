@@ -63,6 +63,14 @@ namespace HasK.Controls.Graph
         /// </summary>
         protected Brush _brush;
         /// <summary>
+        /// The fill brush of object
+        /// </summary>
+        protected Brush _fill;
+        /// <summary>
+        /// Determine if object should be filled
+        /// </summary>
+        protected bool _is_filled = false;
+        /// <summary>
         /// Gets or sets color of object
         /// </summary>
         public Color Color
@@ -79,6 +87,34 @@ namespace HasK.Controls.Graph
                     _pen = new Pen(_color);
                     _brush = new SolidBrush(_color);
                 }
+            }
+        }
+        /// <summary>
+        /// Gets or sets object's fill brush 
+        /// </summary>
+        public Brush FillBrush
+        {
+            get
+            {
+                return _fill;
+            }
+            set
+            {
+                _fill = value;
+            }
+        }
+        /// <summary>
+        /// Gets or sets object's filled flag
+        /// </summary>
+        public bool IsFilled
+        {
+            get
+            {
+                return _is_filled;
+            }
+            set
+            {
+                _is_filled = value;
             }
         }
         /// <summary>
@@ -535,6 +571,8 @@ namespace HasK.Controls.Graph
         {
             var lb = Chart.ToScreenPoint(LeftBottom);
             var sz = Chart.ToScreenSize(Size);
+            if (_is_filled && _fill != null)
+                g.FillRectangle(_fill, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
             g.DrawRectangle(_pen, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
         }
         /// <summary>
@@ -609,6 +647,8 @@ namespace HasK.Controls.Graph
         {
             var lb = Chart.ToScreenPoint(LeftBottom);
             var sz = Chart.ToScreenSize(Size);
+            if (_is_filled && _fill != null)
+                g.FillEllipse(_fill, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
             g.DrawEllipse(_pen, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
         }
         /// <summary>
@@ -706,6 +746,8 @@ namespace HasK.Controls.Graph
         /// <param name="g">Graphics, which should be used for drawing</param>
         public override void Draw(Graphics g)
         {
+            if (_is_filled && _fill != null)
+                g.FillPolygon(_fill, (from p in _points select Chart.ToScreenPoint(p)).ToArray());
             g.DrawPolygon(_pen, (from p in _points select Chart.ToScreenPoint(p)).ToArray());
         }
         /// <summary>
