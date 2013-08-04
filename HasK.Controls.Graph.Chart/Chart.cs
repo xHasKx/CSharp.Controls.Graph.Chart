@@ -28,6 +28,8 @@ namespace HasK.Controls.Graph
         private DPoint _view_center_point;
         private double _view_scale;
         private bool _suspended;
+
+        private Graphics _current_graphics = null;
         # endregion
         # region Common public fields/properties
         /// <summary>
@@ -360,6 +362,29 @@ namespace HasK.Controls.Graph
             InitializeComponent();
             MouseWheelHandler.Add(this, MyOnMouseWheel);
         }
+        #region Helper methods
+        /// <summary>
+        /// Gets current graphics object of chart to draw
+        /// </summary>
+        public Graphics CurrentGraphics
+        {
+            get
+            {
+                if (_current_graphics != null)
+                    return _current_graphics;
+                return CreateGraphics();
+            }
+        }
+        /// <summary>
+        /// Measure string according current graphics of chart
+        /// </summary>
+        /// <param name="str">String to measure</param>
+        /// <returns>Returns size of string in screen coordinates</returns>
+        public SizeF MeasureString(string str)
+        {
+            return CurrentGraphics.MeasureString(str, Font);
+        }
+        #endregion
         # region Methods to control the visible representation of chart
         /// <summary>
         /// Redraw chart and all objects
@@ -556,10 +581,10 @@ namespace HasK.Controls.Graph
         /// <param name="obj">Selected object</param>
         protected void DrawSelection(Graphics g, ChartObject obj)
         {
-            if ((obj.Flags & ChartObject.Selectable) > 0)
+            if ((obj.Flags & ChartObject.Rectangle) > 0)
             {
-                var sobj = obj as IChartSelectableObject;
-                var b = sobj.GetBounds(g, _view_scale);
+                var sobj = obj as ChartRectObject;
+                var b = sobj.GetRealRect(g, _view_scale);
                 var sel_size = SelectionBoxesSize;
 
                 var p1 = ToScreenPoint(new DPoint(b.X, b.Y));
@@ -584,7 +609,10 @@ namespace HasK.Controls.Graph
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            Draw(e.Graphics);
+            var g = e.Graphics;
+            _current_graphics = g;
+            Draw(g);
+            _current_graphics = null;
         }
         /// <summary>
         /// OnResize event handler
@@ -619,11 +647,12 @@ namespace HasK.Controls.Graph
             var dp = ToRealPoint(point);
             var min_s = 1e+100d;
             ChartObject selected = null;
+            var gr = CurrentGraphics;
             foreach (var obj in _items)
-                if ((obj.Flags & ChartObject.Selectable) > 0)
+                if ((obj.Flags & ChartObject.Rectangle) > 0)
                 {
-                    var sobj = obj as IChartSelectableObject;
-                    var bounds = sobj.GetBounds(CreateGraphics(), _view_scale);
+                    var sobj = obj as ChartRectObject;
+                    var bounds = sobj.GetRealRect(gr, _view_scale);
                     if (dp.InRect(bounds))
                     {
                         var cs = bounds.Width * bounds.Height;
@@ -778,7 +807,7 @@ namespace HasK.Controls.Graph
                         if (_ctrl.ClientRectangle.Contains(clientPos)
                          && ReferenceEquals(_ctrl, parent.GetChildAtPoint(parent.PointToClient(pos))))
                         {
-                            var wParam = m.WParam.ToInt32();
+                            var wParam = (Int32)(m.WParam.ToInt64());
                             Func<int, MouseButtons, MouseButtons> getButton =
                                 (flag, button) => ((wParam & flag) == flag) ? button : MouseButtons.None;
 

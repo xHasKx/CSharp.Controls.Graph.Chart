@@ -18,7 +18,7 @@ namespace HasK.Controls.Graph
         /// <summary>
         /// If this flag will be in object's flags, then chart will cast object to IChartSelectableObject to determine selected object
         /// </summary>
-        public const uint Selectable        = 0x00000002;
+        public const uint Rectangle         = 0x00000002;
         /// <summary>
         /// If this flag will be in object's flags, then chart will cast object to IChartMouseMovableObject for moving object by mouse
         /// </summary>
@@ -141,16 +141,88 @@ namespace HasK.Controls.Graph
         public ChartVisibleObject(Chart chart) : base(chart) { }
     }
     /// <summary>
-    /// Interface for all selectable on-chart objects
+    /// Base class for all visible rect-like objects
     /// </summary>
-    public interface IChartSelectableObject
+    public abstract class ChartRectObject : ChartVisibleObject
     {
+        /// <summary>
+        /// Gets or sets the point of left-bottom corner of rectangle
+        /// </summary>
+        public DPoint LeftBottom { get; set; }
+        /// <summary>
+        /// Gets or sets the size of rectangle
+        /// </summary>
+        public DSize Size { get; set; }
+        /// <summary>
+        /// Gets the center point of movable object
+        /// </summary>
+        public DPoint Center
+        {
+            get
+            {
+                return new DPoint(LeftBottom.X + Size.Width / 2, LeftBottom.Y + Size.Height / 2);
+            }
+            set
+            {
+                LeftBottom = new DPoint(value.X - Size.Width / 2, value.Y - Size.Height / 2);
+            }
+        }
+        /// <summary>
+        /// Gets or sets text on ellipse
+        /// </summary>
+        public string Text { get; set; }
+        /// <summary>
+        /// Gets or sets the brush of text on object
+        /// </summary>
+        public Brush TextBrush { get; set; }
+        /// <summary>
+        /// Gets or sets font of text on object
+        /// </summary>
+        public Font Font { get; set; }
+        /// <summary>
+        /// Create base class for all rect-like objects
+        /// </summary>
+        /// <param name="chart"></param>
+        public ChartRectObject(Chart chart) : base(chart)
+        {
+            Flags |= ChartObject.Rectangle;
+            Font = new Font("Tahoma", 10);
+            LeftBottom = new DPoint();
+            Size = new DSize();
+            TextBrush = new SolidBrush(Color.Black);
+        }
+        /// <summary>
+        /// Draw text on the center of rect object
+        /// </summary>
+        /// <param name="g">Graphics object to draw string</param>
+        /// <param name="text">Text to draw on object</param>
+        protected virtual void DrawStringCenter(Graphics g, string text)
+        {
+            if (text != null && text != string.Empty)
+            {
+                var c = Chart.ToScreenPoint(Center);
+                var tsz = g.MeasureString(text, Font);
+                g.DrawString(text, Font, TextBrush, c.X - tsz.Width / 2, c.Y - tsz.Height / 2);
+            }
+        }
         /// <summary>
         /// Chart will calls this method to determine visible bounds of object with given view scale and graphics
         /// </summary>
         /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
         /// <param name="view_scale">Current view scale of chart</param>
-        DRect GetBounds(Graphics g, double view_scale);
+        public abstract DRect GetRealRect(Graphics g, double view_scale);
+        /// <summary>
+        /// Gets the rectangle of object in screen coordinates
+        /// </summary>
+        /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+        /// <param name="view_scale">Current view scale of chart</param>
+        public virtual RectangleF GetScreenRect(Graphics g, double view_scale)
+        {
+            var rr = GetRealRect(g, view_scale);
+            var lb = Chart.ToScreenPoint(new DPoint(rr.X, rr.Y));
+            var sz = Chart.ToScreenSize(new DSize(rr.Width, rr.Height));
+            return new RectangleF(lb.X, lb.Y, sz.Width, sz.Height);
+        }
     }
     /// <summary>
     /// Interface for all mouse moveable on-chart objects
@@ -172,30 +244,12 @@ namespace HasK.Controls.Graph
     /// <summary>
     /// Simple square point on chart with specified color and size
     /// </summary>
-    public class ChartPoint : ChartVisibleObject, IChartSelectableObject
+    public class ChartPoint : ChartRectObject
     {
         /// <summary>
-        /// Gets or sets the position of object
+        /// Gets or sets the mode of point - in screen or in real coordinates
         /// </summary>
-        public DPoint Center { get; set; }
-        /// <summary>
-        /// The size value of Size property
-        /// </summary>
-        protected Size _size;
-        /// <summary>
-        /// Gets or sets the visible size of object
-        /// </summary>
-        public Size Size
-        {
-            get
-            {
-                return _size;
-            }
-            set
-            {
-                _size = value;
-            }
-        }
+        public bool ScreenSizeMode { get; set; }
         /// <summary>
         /// Create simple square point on chart
         /// </summary>
@@ -203,20 +257,20 @@ namespace HasK.Controls.Graph
         /// <param name="center">The center position of this point, in real coordinates</param>
         /// <param name="color">The color of this point</param>
         /// <param name="size">The size of this point, in screen coordinates</param>
-        public ChartPoint(Chart chart, DPoint center, Color color, Size size)
+        public ChartPoint(Chart chart, DPoint center, Color color, DSize size)
             : base(chart)
         {
-            Flags |= ChartObject.Selectable;
+            ScreenSizeMode = true;
+            Size = size;
             Center = center;
             Color = color;
-            Size = size;
         }
         /// <summary>
         /// Create simple square point on chart
         /// </summary>
         /// <param name="chart">Chart for point</param>
         public ChartPoint(Chart chart)
-            : this(chart, new DPoint(), Color.Black, new Size(8, 8)) { }
+            : this(chart, new DPoint(), Color.Black, new DSize(8, 8)) { }
         /// <summary>
         /// Create simple square point on chart
         /// </summary>
@@ -224,14 +278,14 @@ namespace HasK.Controls.Graph
         /// <param name="center">The center position of this point, in real coordinates</param>
         /// <param name="color">The color of this point</param>
         public ChartPoint(Chart chart, DPoint center, Color color)
-            : this(chart, center, color, new Size(8, 8)) { }
+            : this(chart, center, color, new DSize(8, 8)) { }
         /// <summary>
         /// Create simple square point on chart
         /// </summary>
         /// <param name="chart">Chart for point</param>
         /// <param name="center">The center position of this point, in real coordinates</param>
         public ChartPoint(Chart chart, DPoint center)
-            : this(chart, center, Color.Black, new Size(8, 8)) { }
+            : this(chart, center, Color.Black, new DSize(8, 8)) { }
         /// <summary>
         /// Chart will calls this method to draw object
         /// </summary>
@@ -239,17 +293,32 @@ namespace HasK.Controls.Graph
         public override void Draw(Graphics g)
         {
             var rp = Chart.ToScreenPoint(Center);
-            g.FillRectangle(_brush, rp.X - Size.Width / 2, rp.Y - Size.Height / 2, Size.Width, Size.Height);
+            SizeF sz;
+            if (ScreenSizeMode)
+                sz = new SizeF((float)Size.Width, (float)Size.Height);
+            else
+                sz = Chart.ToScreenSize(Size);
+            g.FillRectangle(_brush, rp.X - sz.Width / 2, rp.Y - sz.Height / 2, sz.Width, sz.Height);
         }
         /// <summary>
         /// Chart will calls this method to determine visible bounds of object with given view scale and graphics
         /// </summary>
         /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
         /// <param name="view_scale">Current view scale of chart</param>
-        public DRect GetBounds(Graphics g, double view_scale)
+        public override DRect GetRealRect(Graphics g, double view_scale)
         {
-            var psz = new DSize(Size.Width / view_scale, Size.Height / view_scale);
-            return new DRect(Center.X - psz.Width / 2, Center.Y - psz.Height / 2, psz.Width, psz.Height);
+            return new DRect(Center.X - Size.Width / 2, Center.Y - Size.Height / 2, Size.Width, Size.Height);
+        }
+        /// <summary>
+        /// Gets the rectangle of object in screen coordinates
+        /// </summary>
+        /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
+        /// <param name="view_scale">Current view scale of chart</param>
+        public override RectangleF GetScreenRect(Graphics g, double view_scale)
+        {
+            var c = Chart.ToScreenPoint(Center);
+            var sz = Chart.ToScreenSize(Size);
+            return new RectangleF(c.X - sz.Width / 2, c.Y - sz.Height / 2, sz.Width, sz.Height);
         }
     }
     /// <summary>
@@ -322,17 +391,9 @@ namespace HasK.Controls.Graph
             Right
         }
         /// <summary>
-        /// Gets or sets the text near the point
-        /// </summary>
-        public string Text { get; set; }
-        /// <summary>
         /// Gets or sets text placement type of text near the point
         /// </summary>
         public TextPlaceType TextPlace { get; set; }
-        /// <summary>
-        /// Gets or sets font of text near the point
-        /// </summary>
-        public Font Font { get; set; }
         /// <summary>
         /// Create simple square point on chart with specified color and text near it 
         /// </summary>
@@ -345,7 +406,6 @@ namespace HasK.Controls.Graph
         {
             Flags = 0;
             Text = text;
-            Font = new Font("Tahoma", 10);
             Color = Color.Black;
             TextPlace = place_type;
         }
@@ -359,8 +419,9 @@ namespace HasK.Controls.Graph
             PointF text_pos;
             var text_size = g.MeasureString(Text, Font);
 
-            var dszx = _size.Width / 2;
-            var dszy = _size.Height / 2;
+            var sz = Chart.ToScreenSize(Size);
+            var dszx = sz.Width / 2;
+            var dszy = sz.Height / 2;
 
             if (TextPlace == TextPlaceType.Under)
                 text_pos = new PointF(pos.X - text_size.Width / 2, pos.Y + 2 + dszy);
@@ -520,26 +581,8 @@ namespace HasK.Controls.Graph
     /// <summary>
     /// On-chart rectangle
     /// </summary>
-    public class ChartRectangle : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
+    public class ChartRectangle : ChartRectObject, IChartMouseMovableObject
     {
-        /// <summary>
-        /// Gets the center point of movable object
-        /// </summary>
-        public DPoint Center
-        {
-            get
-            {
-                return new DPoint(LeftBottom.X + Size.Width / 2, LeftBottom.Y + Size.Height / 2);
-            }
-        }
-        /// <summary>
-        /// Gets or sets the point of left-bottom corner of rectangle
-        /// </summary>
-        public DPoint LeftBottom { get; set; }
-        /// <summary>
-        /// Gets or sets the size of rectangle
-        /// </summary>
-        public DSize Size { get; set; }
         /// <summary>
         /// Create the on-chart rectangle
         /// </summary>
@@ -550,7 +593,7 @@ namespace HasK.Controls.Graph
         public ChartRectangle(Chart chart, DPoint left_bottom, DSize size, Color color)
             : base(chart)
         {
-            Flags = ChartObject.Selectable | ChartObject.MouseMovable;
+            Flags = ChartObject.Rectangle | ChartObject.MouseMovable;
             LeftBottom = left_bottom;
             Size = size;
             Color = color;
@@ -580,7 +623,7 @@ namespace HasK.Controls.Graph
         /// </summary>
         /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
         /// <param name="view_scale">Current view scale of chart</param>
-        public DRect GetBounds(Graphics g, double view_scale)
+        public override DRect GetRealRect(Graphics g, double view_scale)
         {
             return new DRect(LeftBottom.X, LeftBottom.Y, Size.Width, Size.Height);
         }
@@ -596,26 +639,8 @@ namespace HasK.Controls.Graph
     /// <summary>
     /// On-chart ellipse
     /// </summary>
-    public class ChartEllipse : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
+    public class ChartEllipse : ChartRectObject, IChartMouseMovableObject
     {
-        /// <summary>
-        /// Gets the center point of movable object
-        /// </summary>
-        public DPoint Center
-        {
-            get
-            {
-                return new DPoint(LeftBottom.X + Size.Width / 2, LeftBottom.Y + Size.Height / 2);
-            }
-        }
-        /// <summary>
-        /// Gets or sets the point of left-bottom corner of ellipse
-        /// </summary>
-        public DPoint LeftBottom { get; set; }
-        /// <summary>
-        /// Gets or sets the size of ellipse
-        /// </summary>
-        public DSize Size { get; set; }
         /// <summary>
         /// Create the on-chart ellipse
         /// </summary>
@@ -626,7 +651,7 @@ namespace HasK.Controls.Graph
         public ChartEllipse(Chart chart, DPoint left_bottom, DSize size, Color color)
             : base(chart)
         {
-            Flags = ChartObject.Selectable | ChartObject.MouseMovable;
+            Flags = ChartObject.Rectangle | ChartObject.MouseMovable;
             LeftBottom = left_bottom;
             Size = size;
             Color = color;
@@ -650,13 +675,14 @@ namespace HasK.Controls.Graph
             if (_is_filled && _fill != null)
                 g.FillEllipse(_fill, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
             g.DrawEllipse(_pen, lb.X, lb.Y - sz.Height, sz.Width, sz.Height);
+            DrawStringCenter(g, Text);
         }
         /// <summary>
         /// Chart will calls this method to determine visible bounds of object with given view scale and graphics
         /// </summary>
         /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
         /// <param name="view_scale">Current view scale of chart</param>
-        public DRect GetBounds(Graphics g, double view_scale)
+        public override DRect GetRealRect(Graphics g, double view_scale)
         {
             return new DRect(LeftBottom.X, LeftBottom.Y, Size.Width, Size.Height);
         }
@@ -672,12 +698,12 @@ namespace HasK.Controls.Graph
     /// <summary>
     /// On-chart polygon
     /// </summary>
-    public class ChartPolygon : ChartVisibleObject, IChartSelectableObject, IChartMouseMovableObject
+    public class ChartPolygon : ChartRectObject, IChartMouseMovableObject
     {
         /// <summary>
         /// Gets the center point of movable object
         /// </summary>
-        public DPoint Center
+        public new DPoint Center
         {
             get
             {
@@ -729,7 +755,7 @@ namespace HasK.Controls.Graph
         public ChartPolygon(Chart chart, DPoint[] points, Color color)
             : base(chart)
         {
-            Flags = ChartObject.Selectable | ChartObject.MouseMovable;
+            Flags = ChartObject.Rectangle | ChartObject.MouseMovable;
             Points = points;
             Color = color;
         }
@@ -770,7 +796,7 @@ namespace HasK.Controls.Graph
         /// </summary>
         /// <param name="g">Current Graphics object, use it for MeasureStringWidth or something else</param>
         /// <param name="view_scale">Current view scale of chart</param>
-        public DRect GetBounds(Graphics g, double view_scale)
+        public override DRect GetRealRect(Graphics g, double view_scale)
         {
             var min_p = new DPoint(_points[0].X, _points[0].Y);
             var max_p = new DPoint(_points[0].X, _points[0].Y);

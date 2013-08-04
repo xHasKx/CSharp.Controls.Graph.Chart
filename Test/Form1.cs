@@ -35,7 +35,7 @@ namespace Test
         private void button1_Click(object sender, EventArgs e)
         {
             var s = rand.Next(40);
-            var obj = new ChartPoint(chart1, RandPoint(), RandColor(), new Size(s, s));
+            var obj = new ChartPoint(chart1, RandPoint(), RandColor(), new DSize(s, s));
             chart1.AddObject(obj);
         }
 
@@ -99,6 +99,9 @@ namespace Test
         private void button8_Click(object sender, EventArgs e)
         {
             var obj = new ChartEllipse(chart1, new DPoint(1, 1), new DSize(7, 4));
+            obj.Text = "ddd";
+            obj.Font = new Font("Courier New", 14);
+            obj.TextBrush = new SolidBrush(Color.Red);
             chart1.PinMovableObjectAndAdd(obj);
         }
 

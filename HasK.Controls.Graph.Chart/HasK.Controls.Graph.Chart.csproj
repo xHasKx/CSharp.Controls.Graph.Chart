@@ -51,7 +51,8 @@
     <Compile Include="Chart.Designer.cs">
       <DependentUpon>Chart.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChartObjects.cs" />
+    <Compile Include="ChartObjects.cs">
+    </Compile>
     <Compile Include="Graph2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
