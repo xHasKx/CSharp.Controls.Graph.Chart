@@ -511,6 +511,18 @@ namespace HasK.Controls.Graph
             else
                 throw new ArgumentException("value hasn't flag ChartObject.MouseMovable");
         }
+
+        private static int CmpObjectsByZIndex(ChartObject obj1, ChartObject obj2)
+        {
+            return obj1._z_index.CompareTo(obj2._z_index);
+        }
+
+        internal void UpdateZIndex(ChartObject obj, int zindex)
+        {
+            // sort items by according z-index field
+            _items.Sort(CmpObjectsByZIndex);
+            Redraw();
+        }
         # endregion
         # region Methods for drawing and processing events
         private void Draw(Graphics g)

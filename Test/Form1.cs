@@ -102,6 +102,8 @@ namespace Test
             obj.Text = "ddd";
             obj.Font = new Font("Courier New", 14);
             obj.TextBrush = new SolidBrush(Color.Red);
+            obj.IsFilled = true;
+            obj.FillBrush = new SolidBrush(Color.Blue);
             chart1.PinMovableObjectAndAdd(obj);
         }
 
@@ -110,6 +112,11 @@ namespace Test
             var obj = new ChartPolygon(chart1, new DPoint[] { new DPoint(1, 1), new DPoint(1, 3), new DPoint(7, 3), new DPoint(7, 2), new DPoint(5, 2), new DPoint(5, 1), new DPoint(1, 1) });
             obj.PenWidth = 2;
             chart1.PinMovableObjectAndAdd(obj);
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            chart1.Items[0].ZIndex += 1;
         }
     }
 }

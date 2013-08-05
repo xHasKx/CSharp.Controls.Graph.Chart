@@ -11,6 +11,7 @@ namespace HasK.Controls.Graph
     /// </summary>
     public abstract class ChartObject
     {
+        internal int _z_index = 0;
         /// <summary>
         /// If this flag will be in object's flags, then chart will not call Draw object
         /// </summary>
@@ -31,6 +32,21 @@ namespace HasK.Controls.Graph
         /// The chart which contains this object
         /// </summary>
         public Chart Chart { get; private set; }
+        /// <summary>
+        /// Z-index of object on chart
+        /// </summary>
+        public int ZIndex
+        {
+            get
+            {
+                return _z_index;
+            }
+            set
+            {
+                _z_index = value;
+                Chart.UpdateZIndex(this, value);
+            }
+        }
         /// <summary>
         /// Base constructor for all on-chart objects
         /// </summary>
