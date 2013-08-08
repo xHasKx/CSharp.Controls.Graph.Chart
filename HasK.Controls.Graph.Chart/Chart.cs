@@ -727,7 +727,7 @@ namespace HasK.Controls.Graph
 
                 if (e.Delta < 0)
                     dd = -dd;
-                if (_view_scale + dd > 2.5)
+                if (_view_scale + dd > 0.1)
                     ViewScale += dd;
                 if (_view_scale > 700000)
                     _view_scale = 700000;
