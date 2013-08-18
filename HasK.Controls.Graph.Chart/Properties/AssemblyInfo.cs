@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("HasK.Controls.Graph.Chart")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("https://github.com/xHasKx/CSharp.Controls.Graph.Chart")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HasK.Controls.Graph.Chart")]
