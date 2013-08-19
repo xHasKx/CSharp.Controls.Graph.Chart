@@ -380,6 +380,72 @@ namespace HasK.Controls.Graph
         }
     }
     /// <summary>
+    /// One-pixel line on chart with specified points of begin, end, color and text
+    /// </summary>
+    public class ChartTextLine : ChartLine
+    {
+        /// <summary>
+        /// Text on line
+        /// </summary>
+        public string Text { get; set; }
+        /// <summary>
+        /// Font of text on line
+        /// </summary>
+        public Font Font { get; set; }
+        /// <summary>
+        /// Brush of text on line
+        /// </summary>
+        public Brush TextBrush { get; set; }
+        /// <summary>
+        /// Brush of text background on line
+        /// </summary>
+        public Brush TextBackgroundBrush { get; set; }
+        /// <summary>
+        /// Create text line on chart
+        /// </summary>
+        /// <param name="chart">Chart for line</param>
+        /// <param name="begin">Begin point of line</param>
+        /// <param name="end">End point of line</param>
+        /// <param name="text">Text on line</param>
+        public ChartTextLine(Chart chart, DPoint begin, DPoint end, string text)
+            : base(chart, begin, end)
+        {
+            Text = text;
+            Font = new Font("Times New Roman", 10);
+            TextBrush = new SolidBrush(Color.Black);
+            TextBackgroundBrush = new SolidBrush(Color.White);
+        }
+        /// <summary>
+        /// Create text line on chart
+        /// </summary>
+        /// <param name="chart">Chart for line</param>
+        /// <param name="text">Text on line</param>
+        public ChartTextLine(Chart chart, string text) : base(chart)
+        {
+            Text = text;
+            Font = new Font("Times New Roman", 10);
+            TextBrush = new SolidBrush(Color.Black);
+            TextBackgroundBrush = new SolidBrush(Color.White);
+        }
+        /// <summary>
+        /// Chart will calls this method to draw object
+        /// </summary>
+        /// <param name="g">Graphics, which should be used for drawing</param>
+        public override void Draw(Graphics g)
+        {
+            base.Draw(g);
+            if (!String.IsNullOrEmpty(Text) && Font != null && TextBrush != null)
+            {
+                var center = Chart.ToScreenPoint(new DPoint(Begin.X + (End.X - Begin.X) / 2.0, Begin.Y + (End.Y - Begin.Y) / 2.0));
+                var sz = g.MeasureString(Text, Font);
+                var p = new PointF(center.X - sz.Width / 2.0f, center.Y - sz.Height / 2.0f);
+                if (TextBackgroundBrush != null)
+                    g.FillRectangle(TextBackgroundBrush, new RectangleF(p, sz));
+                g.DrawString(Text, Font, TextBrush, p);
+            }
+        }
+    }
+    /// <summary>
     /// Simple square point on chart with specified color and text near it
     /// </summary>
     public class ChartTextPoint : ChartPoint

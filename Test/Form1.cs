@@ -118,5 +118,11 @@ namespace Test
         {
             chart1.Items[0].ZIndex += 1;
         }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            var l = new ChartTextLine(chart1, new DPoint(4, 4), new DPoint(9, 15), "test");
+            chart1.AddObject(l);
+        }
     }
 }
